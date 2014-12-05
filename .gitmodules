@@ -1,0 +1,3 @@
+[submodule "redd"]
+	path = redd
+	url = https://github.com/lemtzas/redd
