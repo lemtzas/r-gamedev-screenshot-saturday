@@ -1,0 +1,272 @@
+require 'redd'
+require 'imgur'
+
+module SSSProcessor
+  def self.process(submission, verbose = true)
+    images = []
+    posts = []
+
+    print "#{'%-50s' % submission.title} - "
+    total = 0
+
+    seen = {}
+    expanded = {}
+
+    # expand(submission.comments)
+    submission.comments({:limit => 19000, :depth => 1}).each do |comment|
+      # puts "- #{comment.author} - #{limit_lines(comment.body)}"
+      if comment.is_a?(Redd::Object::Comment) then
+        if seen[comment.id] then next end
+        seen[comment.id] = true
+        total += 1
+        print(".") if verbose and total % 10 == 0
+        if comment.parent_id == comment.link_id then
+          post, image_list = process_post(submission, comment)
+          posts.push(post)
+          image_list.each do |image|
+            images.push(image)
+          end
+        end
+      elsif comment.is_a?(Redd::Object::MoreComments) then
+        print ">" if verbose
+        # comment.expand().things.each do |comment|
+        #   add_comments(comment)
+        # end
+      end
+    end
+    puts "!" if verbose
+    print "#{'%-50s' % submission.title} - " if verbose
+    puts '%-20s' % "#{total}/#{submission.num_comments} parsed - " if verbose
+
+    return {:posts=>posts, :images=>images}
+  end
+
+  
+
+  ## helpers
+  class << self
+    private
+
+    $seen = {}
+
+    $expanded = {}
+
+    def expand(thing)
+      was_expanded = true
+      while was_expanded == true do
+        was_expanded = false
+        thing.each do |subthing|
+          if subthing.is_a?(Redd::Object::MoreComments) and not $expanded[subthing] then
+            subthing.expand()
+            $expanded[subthing] = true
+            print("'")
+            was_expanded = true
+          end
+        end
+      end
+    end
+
+    def limit_lines(text, max)
+      endpoint = 0
+      [1..max].each do
+        endpoint = text.index("\n",endpoint+1) || text.length
+      end
+      return text[0..endpoint]
+    end
+
+    STDOUT.sync = true
+
+    def firstImage(text)
+      earliest_index = text.length
+      match_data = false
+      url = ""
+      source = ""
+      begin #find the first thing
+        # imgur albums
+        new_index = (text =~ /https?:\/\/.*?imgur\.com\/a\/(\w*)/i)
+        if new_index and new_index < earliest_index then
+          earliest_index = new_index
+          match_data = $~
+          id = $~[1]
+          album = $imgur.get_album(id)
+          cover_id = album.cover
+          url = "http://i.imgur.com/#{cover_id}.jpg"
+          source = $~.to_s
+        end
+        # imgur link, gets medium thumbnail (m)
+        new_index = (text =~ /https?:\/\/.*?imgur\.com\/([A-Za-z0-9_-]*)/i)
+        if new_index and new_index < earliest_index then
+          earliest_index = new_index
+          match_data = $~
+          id = $~[1]
+          url = "http://i.imgur.com/#{id}m.jpg"
+          source = $~.to_s
+        end
+        # gfycat
+        new_index = (text =~ /https?:\/\/.*?gfycat\.com\/(\w*)/i)
+        if new_index and new_index < earliest_index then
+          earliest_index = new_index
+          match_data = $~
+          # http://thumbs.gfycat.com/ThinSarcasticFinnishspitz-thumb100.jpg
+          # http://thumbs.gfycat.com/ThinSarcasticFinnishspitz-poster.jpg
+          url = "http://thumbs.gfycat.com/#{$~[1]}-poster.jpg"
+          source = $~.to_s
+        end
+        # raw images
+        new_index = (text =~ /(https?:\/\/.*?(?:png|jpg|jpeg|gif))/i)
+        if new_index and new_index < earliest_index then
+          earliest_index = new_index
+          match_data = $~
+          url =  $~[1]
+          source = $~.to_s
+        end
+        # youtube
+        new_index = (text =~ /https?:\/\/.*?youtube\.com\/watch\?v=([A-Za-z0-9_-]*)/i)
+        if new_index and new_index < earliest_index then
+          earliest_index = new_index
+          match_data = $~
+          url =  "http://img.youtube.com/vi/#{$~[1]}/hqdefault.jpg"
+          source = $~.to_s
+        end
+      end
+      return url, source
+    end
+
+    def youtube(text)
+      result = /https?:\/\/.*?youtube\.com\/watch\?v=([A-Za-z0-9_-]*)/i.match(text)
+      if result then
+        id = result[1]
+        return "http://img.youtube.com/vi/#{id}/hqdefault.jpg"
+      else
+        return ''
+      end
+    end
+
+    def twitter(text, flair)
+      
+      result = /(https?:\/\/twitter\.com\/(\w+))/i.match(text)
+      result2 = /^@(\w+)/.match(flair)
+      if result then
+        return result[1], result[2]
+      elsif result2 then
+        return "http://twitter.com/#{result2[1]}", result2[1]
+      else
+        return '',''
+      end
+    end
+
+    def process_post(submission, comment)
+      post = {}
+      post[:author]   = comment.author
+      post[:firstline]  = limit_lines(comment.body, 1)
+      post[:twolines]   = limit_lines(comment.body, 3)
+      post[:firstimage], post[:source] = firstImage(comment.body)
+      post[:url] = "http://www.reddit.com/r/#{$gamedev.display_name}/comments/#{submission.id}//#{comment.id}"
+      post[:twitter_link], post[:twitter_handle] = twitter(comment.body, comment.author_flair_text)
+      post[:youtube] = youtube(comment.body)
+      post[:created_utc] = comment.created_utc
+      post[:created] = comment.created
+
+      return post, []
+    end
+  end
+end
+
+module SSSDump
+  def self.stat_dump(posts)
+    count = 0
+    missing = 0
+    twitter_count = 0
+    youtube_count = 0
+
+    posts.each do |post|
+      count += 1
+      if post[:firstimage].length < 1 then
+        missing += 1
+      end
+      twitter_count += 1 if post[:twitter_handle].length > 1
+      youtube_count += 1 if post[:youtube].length > 1
+      puts "#{post[:url]} #{post[:firstimage].length>1?'img':'   '} #{post[:youtube].length>1?'yt':'  '} #{post[:twitter_handle].length>1?'t':' '} #{post[:firstline]}"
+    end
+
+    puts "images #{count-missing}/#{count} (#{perc(count-missing,count)})"
+    puts "twitter #{twitter_count}/#{count} (#{perc(twitter_count,count)})"
+    puts "youtube #{youtube_count}/#{count} (#{perc(youtube_count,count)})"
+  end
+
+
+
+
+  class << self
+    private
+    def perc(v1,v2)
+      (v1*100.0/v2).floor.to_s + "%"
+    end
+  end
+end
+
+
+
+module SSSWebify
+  def self.webify(submission,posts)
+    html = File.open( 'C:\Users\Lemtzas\Dropbox\Public\SSS\output3.html',"w" )
+    html << "<!DOCTYPE html><html><head>"
+    html << '<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">'
+    html << "<title>/r/gamedev SSS aggregator</title>"
+    html << '<link rel="stylesheet" type="text/css" href="/u/80446300/SSS/style.css">'
+    html << "</head><body>"
+    html << "<header><h1>#{submission.title}</h1><p>Generated on #{Time.now.to_s}</p></header>"
+    #posts.shuffle
+    posts.each do |post|
+      html << dump_post(submission, post)
+    end
+    html << "</body></html>"
+    html.close
+  end
+  class << self
+    private
+    def dump_post(submission, post)
+      dump = ''
+      seconds_from_submission = (Time.at(post[:created_utc]) - Time.at(submission.created))
+      time = ""
+      if seconds_from_submission > 60*60*24 then
+        days = (seconds_from_submission/(60*60*24)).floor
+        hours = ((seconds_from_submission - days*(60*60*24))/(60*60)).floor
+        time = "#{days}d #{hours}h"
+      elsif seconds_from_submission > 60*60 then
+        time = "#{(seconds_from_submission/(60*60)).floor}h"
+      elsif seconds_from_submission > 60
+        time = "#{(seconds_from_submission/60).floor}m"
+      else
+        time = "#{(seconds_from_submission).floor}s"
+      end
+
+      dump <<   "
+                    <div class='tile'>
+                      <a href='#{post[:source]}' class='ss-link'>
+                        <img src='#{post[:firstimage]}'></img>
+                      </a>
+                      <div class='top-wrap'>"
+      # quick links
+      dump << "         <a href='#{post[:url]}' class='reddit'><i class='fa fa-reddit'></i></a>"
+      if post[:twitter_link].length > 0 then
+        dump << "       <a href='#{post[:twitter_link]}' class='twitter'><i class='fa fa-twitter'></i></a>"
+      end
+
+      # nameplate text
+      if post[:twitter_link].length > 0 then
+        dump << "<a href='#{post[:twitter_link]}'>@#{post[:twitter_handle]}</a>"
+      else
+        dump << "<a href='#{post[:url]}' class='author'>/u/#{post[:author]}</a>"
+      end
+      dump << "</div>"
+
+      # time plate
+      dump << "      <div class='time-wrap'><span>#{time} after</span></div>"
+
+      # wrap it all up
+      dump << "</div>\n\n"
+      return dump
+    end
+  end
+end

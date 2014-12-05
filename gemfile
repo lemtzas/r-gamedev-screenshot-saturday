@@ -1,0 +1,5 @@
+gem 'redd', '0.6.4', :path => 'C:\Users\Lemtzas\Dropbox\dev\ruby\SSS\redd-master'
+gem 'cinch'
+gem 'cinch-identify'
+gem 'imgur-api'
+gem "econfig"
