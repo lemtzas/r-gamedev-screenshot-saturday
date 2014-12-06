@@ -39,6 +39,7 @@
   height: 40px;
   font-size: 200%;
   text-shadow: 0px 0px 10px #fff;
+  -webkit-text-stroke: 1px black;
 }
 
 img {
@@ -74,4 +75,13 @@ img {
 
 .time-wrap span {
   height: 20px;
+}
+
+.ss-link .fa-spinner {
+    -webkit-animation: rotation 2s infinite linear;
+}
+
+@-webkit-keyframes rotation {
+    from {-webkit-transform: rotate(0deg);}
+    to   {-webkit-transform: rotate(359deg);}
 }
