@@ -248,7 +248,7 @@ module SSSWebify
   def self.webify(submission,posts)
     html = File.open( 'index.html',"w" )
     html << "<!DOCTYPE html><html><head>"
-    html << '<meta id="meta" name="viewport" content="width=device-width; initial-scale=0.75" /'
+    html << '<meta id="meta" name="viewport" content="width=device-width; initial-scale=0.75" />'
     html << '<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">'
     html << "<title>/r/gamedev SSS aggregator</title>"
     html << '<link rel="stylesheet" type="text/css" href="style.css">'
