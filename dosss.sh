@@ -5,5 +5,5 @@ pwd
 cd $DIR
 pwd
 git pull
-$rvm_path/wrappers/ruby-2.1.5/ruby SSS_web.rb
+/home/lem/.rvm/wrappers/ruby-2.1.5/ruby SSS_web.rb
 
