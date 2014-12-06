@@ -32,12 +32,13 @@
   background-position: center;
   background-size: cover;
   border-radius: 10px;
-  text-shadow: 0px 0px 5px #fff;
 }
 
 .ss-link .fa {
   width: 40px;
   height: 40px;
+  font-size: 200%;
+  text-shadow: 0px 0px 10px #fff;
 }
 
 img {

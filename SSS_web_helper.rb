@@ -95,7 +95,7 @@ module SSSProcessor
             cover_id = album.cover
             url = "http://i.imgur.com/#{cover_id}.jpg"
             source = $~.to_s
-            icon = "fa fa-folder-open-o"
+            icon = "fa fa-folder-open"
           rescue => e
           end
         end
