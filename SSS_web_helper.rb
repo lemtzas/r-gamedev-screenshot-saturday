@@ -100,7 +100,7 @@ module SSSProcessor
           end
         end
         # imgur link, gets medium thumbnail (m)
-        new_index = (text =~ /https?:\/\/(.*?\.)?imgur\.com\/([A-Za-z0-9_-]*)/i)
+        new_index = (text =~ /https?:\/\/(:?.*?\.)?imgur\.com\/([A-Za-z0-9_-]*)/i)
         if new_index and new_index < earliest_index then
           earliest_index = new_index
           match_data = $~
@@ -115,7 +115,7 @@ module SSSProcessor
           end
         end
         # gfycat
-        new_index = (text =~ /https?:\/\/(.*?\.)?gfycat\.com\/(\w*)/i)
+        new_index = (text =~ /https?:\/\/(:?.*?\.)?gfycat\.com\/(\w*)/i)
         if new_index and new_index < earliest_index then
           earliest_index = new_index
           match_data = $~
@@ -126,7 +126,7 @@ module SSSProcessor
           icon = "fa fa-spinner"
         end
         # raw images
-        new_index = (text =~ /(https?:\/\/(.*?\.)?\.(png|jpg|jpeg|gif))/i)
+        new_index = (text =~ /(https?:\/\/(:?.*?\.)?\.(png|jpg|jpeg|gif))/i)
         if new_index and new_index < earliest_index then
           earliest_index = new_index
           match_data = $~
@@ -139,7 +139,7 @@ module SSSProcessor
           end
         end
         # youtube
-        new_index = (text =~ /https?:\/\/(.*?\.)?youtube\.com\/watch\?v=([A-Za-z0-9_-]*)/i)
+        new_index = (text =~ /https?:\/\/(:?.*?\.)?youtube\.com\/watch\?v=([A-Za-z0-9_-]*)/i)
         if new_index and new_index < earliest_index then
           earliest_index = new_index
           match_data = $~
@@ -152,7 +152,7 @@ module SSSProcessor
     end
 
     def youtube(text)
-      result = /https?:\/\/(.*?\.)?youtube\.com\/watch\?v=([A-Za-z0-9_-]*)/i.match(text)
+      result = /https?:\/\/(:?.*?\.)?youtube\.com\/watch\?v=([A-Za-z0-9_-]*)/i.match(text)
       if result then
         id = result[1]
         return result.to_s
