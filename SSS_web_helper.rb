@@ -1,5 +1,6 @@
 require 'redd'
 require 'imgur'
+require 'redcarpet'
 
 module SSSProcessor
   def self.process(submission, verbose = true)
@@ -208,6 +209,7 @@ end
 
 
 module SSSWebify
+  @markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: true, tables: true)
   def self.webify(submission,posts)
     html = File.open( 'index.html',"w" )
     html << "<!DOCTYPE html><html><head>"
@@ -223,6 +225,13 @@ module SSSWebify
                 <p>Generated on #{Time.now.to_s}</p>
                 <p id='last_time'>You haven't seen these.</p>
               </header>"
+    # header text
+    html << "<div id='explanation'>"
+      explanation_file = File.open("explanation.md", "rb")
+      explanation_text = file.read
+      explanation_file.close()
+      html << @markdown.render(explanation_text)
+    html << "</div>"
     posts.sort! { |a,b| b[:created_utc].to_i <=> a[:created_utc].to_i }
     posts.each do |post|
       html << dump_post(submission, post)
