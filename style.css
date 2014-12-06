@@ -49,8 +49,8 @@ img {
   height: 200px;
   position: absolute;
   z-index: 5;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
+  -moz-border-radius: 12px;
+  border-radius: 12px;
 }
 
 .top-wrap {
