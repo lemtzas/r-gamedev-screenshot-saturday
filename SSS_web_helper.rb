@@ -140,7 +140,7 @@ module SSSProcessor
           match_data = $~
           url =  "http://img.youtube.com/vi/#{$~[1]}/hqdefault.jpg"
           source = $~.to_s
-          icon = "fa fa-youtube"
+          icon = "fa fa-youtube-play"
         end
       end
       return url, source, icon

@@ -25,11 +25,19 @@
 .ss-link {
   float: left;
   position: absolute;
-  width: 200px;
-  height: 200px;
+  width: 195px;
+  height: 175px;
+  padding-left: 5px;
+  padding-top: 25px;
   background-position: center;
   background-size: cover;
   border-radius: 10px;
+  text-shadow: 0px 0px 5px #fff;
+}
+
+.ss-link .fa {
+  width: 40px;
+  height: 40px;
 }
 
 img {
