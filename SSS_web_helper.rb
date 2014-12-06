@@ -204,6 +204,9 @@ module SSSProcessor
       post[:youtube] = youtube(comment.body)
       post[:created_utc] = comment.created_utc
       post[:created] = comment.created
+      if post[:source].length == 0 then
+        post[:source] = post[:url]
+      end
 
       return post, []
     end
