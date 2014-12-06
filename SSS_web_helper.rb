@@ -1,6 +1,7 @@
 require 'redd'
 require 'imgur'
 require 'kramdown'
+require 'open-uri'
 
 module SSSProcessor
   def self.process(submission, verbose = true)
@@ -107,7 +108,6 @@ module SSSProcessor
           earliest_index = new_index
           match_data = $~
           id = $~[1]
-          puts id, $~.to_s
           image = $imgur.get_image(id)
           url = "http://i.imgur.com/#{id}m.jpg"
           source = $~.to_s
@@ -155,6 +155,31 @@ module SSSProcessor
             icon = ""
           end
           rule = "raw image"
+        end
+        # vine
+        new_index = (text =~ /https?:\/\/[^\s]*?(?:vineapp\.com|vine\.co)\/v\/([A-Za-z0-9_-]+)/i)
+        if new_index and new_index < earliest_index then
+          # begin
+            # get the page
+            vine_url = $~.to_s
+            open( vine_url,
+                  "User-Agent" => "Ruby/#{RUBY_VERSION}",) {|f|
+              contents = f.read
+              # find the og:image data
+              og_image_match = contents =~ /property="og:image" content="(.*?)"/
+              if og_image_match then
+                puts "vine matched"
+                earliest_index = new_index
+                match_data = $~
+                url =  $~.to_s
+                source = vine_url
+                icon = "fa fa-vine"
+                rule = "vine"
+              end
+            }
+            
+          # rescue => e
+          # end
         end
         # youtube
         new_index = (text =~ /https?:\/\/[^\s]*?(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]+)/i)
