@@ -234,7 +234,7 @@ module SSSWebify
                 <p>Generated on #{Time.now.to_s}</p>
                 <p id='last_time'>You haven't seen these.</p>
               </header>"
-    results[:posts].sort! { |a,b| b[:created_utc].to_i <=> a[:created_utc].to_i }
+    posts.sort! { |a,b| b[:created_utc].to_i <=> a[:created_utc].to_i }
     posts.each do |post|
       html << dump_post(submission, post)
     end
