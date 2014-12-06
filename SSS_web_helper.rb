@@ -181,6 +181,31 @@ module SSSProcessor
           # rescue => e
           # end
         end
+        # indiedb
+        new_index = (text =~ /https?:\/\/[^\s]*?indiedb\.com\/[^\s]*?/i)
+        if new_index and new_index < earliest_index then
+          # begin
+            # get the page
+            vine_url = $~.to_s
+            open( vine_url,
+                  "User-Agent" => "Ruby/#{RUBY_VERSION}",) {|f|
+              contents = f.read
+              # find the og:image data
+              og_image_match = contents =~ /property="og:image" content="(.*?)"/
+              if og_image_match then
+                puts "vine matched"
+                earliest_index = new_index
+                match_data = $~
+                url =  $~[1].to_s
+                source = vine_url
+                icon = "fa fa-vine"
+                rule = "vine"
+              end
+            }
+            
+          # rescue => e
+          # end
+        end
         # youtube
         new_index = (text =~ /https?:\/\/[^\s]*?(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]+)/i)
         if new_index and new_index < earliest_index then
