@@ -217,17 +217,6 @@ module SSSWebify
     html << '<link rel="stylesheet" type="text/css" href="style.css">'
     html << '<script src="moz_cookie_lib.js"></script>'
     # html << '<script src="display_last_visit.js"></script>'
-    last_time_after_text = time_since(Time.at(submission.created), Time.now())
-    last_time_expiry = ((Time.at(submission.created) + (60*60*24*7)) - Time.now()).to_i # expire 6 days after post
-    puts last_time_expiry
-    html << %%<script>
-              if(docCookies.hasItem("last_time_after") && docCookies.getItem("last_time_title") === "#{submission.title}") {
-                document.getElementById("last_time").innerHTML = docCookies.getItem("last_time_after");
-              }
-              docCookies.setItem("last_time_after","#{last_time_after_text}", #{last_time_expiry})
-              docCookies.setItem("last_time_title","#{submission.title}", #{last_time_expiry})
-              alert("var set")
-              </script>%
     html << "</head><body>"
     html << "<header>
                 <h1>#{submission.title}</h1>
@@ -238,6 +227,18 @@ module SSSWebify
     posts.each do |post|
       html << dump_post(submission, post)
     end
+    # expiry notification
+    last_time_after_text = time_since(Time.at(submission.created), Time.now())
+    last_time_expiry = ((Time.at(submission.created) + (60*60*24*7)) - Time.now()).to_i # expire 6 days after post
+    puts last_time_expiry
+    html << %%<script>
+                if(docCookies.hasItem("last_time_after") && docCookies.getItem("last_time_title") === "#{submission.title}") {
+                  document.getElementById("last_time").innerHTML = docCookies.getItem("last_time_after");
+                }
+                docCookies.setItem("last_time_after","You were last here #{last_time_after_text} ago.", #{last_time_expiry})
+                docCookies.setItem("last_time_title","#{submission.title}", #{last_time_expiry})
+                alert("var set")
+              </script>%
     html << "</body></html>"
     html.close
   end
