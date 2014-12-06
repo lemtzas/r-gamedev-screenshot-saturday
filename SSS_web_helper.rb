@@ -82,6 +82,7 @@ module SSSProcessor
       match_data = false
       url = ""
       source = ""
+      icon = ""
       begin #find the first thing
         # imgur albums
         new_index = (text =~ /https?:\/\/.*?imgur\.com\/a\/(\w*)/i)
@@ -94,6 +95,7 @@ module SSSProcessor
             cover_id = album.cover
             url = "http://i.imgur.com/#{cover_id}.jpg"
             source = $~.to_s
+            icon = "fa fa-folder-open-o"
           rescue => e
           end
         end
@@ -105,6 +107,7 @@ module SSSProcessor
           id = $~[1]
           url = "http://i.imgur.com/#{id}m.jpg"
           source = $~.to_s
+            icon = ""
         end
         # gfycat
         new_index = (text =~ /https?:\/\/.*?gfycat\.com\/(\w*)/i)
@@ -115,14 +118,20 @@ module SSSProcessor
           # http://thumbs.gfycat.com/ThinSarcasticFinnishspitz-poster.jpg
           url = "http://thumbs.gfycat.com/#{$~[1]}-poster.jpg"
           source = $~.to_s
+          icon = "fa fa-spinner"
         end
         # raw images
-        new_index = (text =~ /(https?:\/\/.*?(?:png|jpg|jpeg|gif))/i)
+        new_index = (text =~ /(https?:\/\/.*?(png|jpg|jpeg|gif))/i)
         if new_index and new_index < earliest_index then
           earliest_index = new_index
           match_data = $~
           url =  $~[1]
           source = $~.to_s
+          if $~[2] == 'gif' then
+            icon = "fa fa-spinner"
+          else
+            icon = ""
+          end
         end
         # youtube
         new_index = (text =~ /https?:\/\/.*?youtube\.com\/watch\?v=([A-Za-z0-9_-]*)/i)
@@ -131,16 +140,17 @@ module SSSProcessor
           match_data = $~
           url =  "http://img.youtube.com/vi/#{$~[1]}/hqdefault.jpg"
           source = $~.to_s
+          icon = "fa fa-youtube"
         end
       end
-      return url, source
+      return url, source, icon
     end
 
     def youtube(text)
       result = /https?:\/\/.*?youtube\.com\/watch\?v=([A-Za-z0-9_-]*)/i.match(text)
       if result then
         id = result[1]
-        return "http://img.youtube.com/vi/#{id}/hqdefault.jpg"
+        return result.to_s
       else
         return ''
       end
@@ -164,7 +174,7 @@ module SSSProcessor
       post[:author]   = comment.author
       post[:firstline]  = limit_lines(comment.body, 1)
       post[:twolines]   = limit_lines(comment.body, 3)
-      post[:firstimage], post[:source] = firstImage(comment.body)
+      post[:firstimage], post[:source], post[:icon] = firstImage(comment.body)
       post[:url] = "http://www.reddit.com/r/#{$gamedev.display_name}/comments/#{submission.id}//#{comment.id}"
       post[:twitter_link], post[:twitter_handle] = twitter(comment.body, comment.author_flair_text)
       post[:youtube] = youtube(comment.body)
@@ -259,13 +269,19 @@ module SSSWebify
       time = time_since(Time.at(submission.created), Time.at(post[:created_utc]))
 
       dump <<   %%   <div class='tile'>
-                      <a href='#{post[:source]}' class='ss-link' style="background-image: url(#{post[:firstimage]})">
-                      </a>
+                      <a href='#{post[:source]}' class='ss-link' style="background-image: url(#{post[:firstimage]})">%
+      if post[:icon].length > 0 then
+        dump << %%      <i class="#{post[:icon]}"></i>%
+      end
+      dump << %%      </a>
                       <div class='top-wrap'>%
       # quick links
       dump << "         <a href='#{post[:url]}' class='reddit'><i class='fa fa-reddit'></i></a>"
       if post[:twitter_link].length > 0 then
         dump << "       <a href='#{post[:twitter_link]}' class='twitter'><i class='fa fa-twitter'></i></a>"
+      end
+      if post[:youtube].length > 0 then
+        dump << "       <a href='#{post[:youtube]}' class='youtube'><i class='fa fa-youtube'></i></a>"
       end
 
       # nameplate text
