@@ -105,7 +105,6 @@ module SSSProcessor
           earliest_index = new_index
           match_data = $~
           id = $~[1]
-          puts match_data.to_s, id
           image = $imgur.get_image(id)
           url = "http://i.imgur.com/#{id}m.jpg"
           source = $~.to_s
@@ -123,6 +122,17 @@ module SSSProcessor
           # http://thumbs.gfycat.com/ThinSarcasticFinnishspitz-thumb100.jpg
           # http://thumbs.gfycat.com/ThinSarcasticFinnishspitz-poster.jpg
           url = "http://thumbs.gfycat.com/#{$~[1]}-poster.jpg"
+          source = $~.to_s
+          icon = "fa fa-spinner"
+        end
+        # recordit.co
+        new_index = (text =~ /https?:\/\/(?:\w*?\.)?recordit\.co\/(\w+)/i)
+        if new_index and new_index < earliest_index then
+          earliest_index = new_index
+          match_data = $~
+          # http://thumbs.gfycat.com/ThinSarcasticFinnishspitz-thumb100.jpg
+          # http://thumbs.gfycat.com/ThinSarcasticFinnishspitz-poster.jpg
+          url = "http://g.recordit.co/#{$~[1]}.gif"
           source = $~.to_s
           icon = "fa fa-spinner"
         end
