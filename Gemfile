@@ -1,0 +1,5 @@
+source 'https://rubygems.org'
+gem 'redd', '0.6.4', :path => './redd/'
+gem 'cinch'
+gem 'cinch-identify'
+gem 'imgur-api'

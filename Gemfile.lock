@@ -1,5 +1,5 @@
 PATH
-  remote: .\redd
+  remote: ./redd/
   specs:
     redd (0.6.4)
       faraday (~> 0.9.0)
@@ -8,6 +8,7 @@ PATH
       multi_json (~> 1.10)
 
 GEM
+  remote: https://rubygems.org/
   specs:
     cinch (2.1.0)
     cinch-identify (1.6.0)
@@ -30,6 +31,7 @@ GEM
     thread_safe (0.3.4)
 
 PLATFORMS
+  ruby
   x64-mingw32
 
 DEPENDENCIES
