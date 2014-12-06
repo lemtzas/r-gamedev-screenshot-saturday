@@ -105,9 +105,14 @@ module SSSProcessor
           earliest_index = new_index
           match_data = $~
           id = $~[1]
+          image = $imgur.get_image(id)
           url = "http://i.imgur.com/#{id}m.jpg"
           source = $~.to_s
+          if image.animated then
+            icon = "fa fa-spinner"
+          else
             icon = ""
+          end
         end
         # gfycat
         new_index = (text =~ /https?:\/\/.*?gfycat\.com\/(\w*)/i)
