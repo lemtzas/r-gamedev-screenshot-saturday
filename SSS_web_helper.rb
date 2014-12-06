@@ -102,11 +102,12 @@ module SSSProcessor
           end
         end
         # imgur link, gets medium thumbnail (m)
-        new_index = (text =~ /https?:\/\/[^\s]*?imgur\.com\/([A-Za-z0-9_-]+)/i)
+        new_index = (text =~ /https?:\/\/[^\s]*?imgur\.com\/(?:gallery\/)?([A-Za-z0-9_-]+)/i)
         if new_index and new_index < earliest_index then
           earliest_index = new_index
           match_data = $~
           id = $~[1]
+          puts id, $~.to_s
           image = $imgur.get_image(id)
           url = "http://i.imgur.com/#{id}m.jpg"
           source = $~.to_s
