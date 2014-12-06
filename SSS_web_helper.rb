@@ -318,7 +318,7 @@ module SSSWebify
       elsif seconds_from_submission > 60*60 then
         hours = (seconds_from_submission/(60*60)).floor
         minutes = ((seconds_from_submission - (hours*60*60))/60).floor
-        time = "#{}h"
+        time = "#{hours}h #{minutes}m"
       elsif seconds_from_submission > 60
         time = "#{(seconds_from_submission/60).floor}m"
       else
