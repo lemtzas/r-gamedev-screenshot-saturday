@@ -171,7 +171,7 @@ module SSSProcessor
                 puts "vine matched"
                 earliest_index = new_index
                 match_data = $~
-                url =  $~.to_s
+                url =  $~[1].to_s
                 source = vine_url
                 icon = "fa fa-vine"
                 rule = "vine"
