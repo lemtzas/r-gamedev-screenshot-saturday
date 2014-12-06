@@ -316,7 +316,9 @@ module SSSWebify
         hours = ((seconds_from_submission - days*(60*60*24))/(60*60)).floor
         time = "#{days}d #{hours}h"
       elsif seconds_from_submission > 60*60 then
-        time = "#{(seconds_from_submission/(60*60)).floor}h"
+        hours = (seconds_from_submission/(60*60)).floor
+        minutes = ((seconds_from_submission - (hours*60*60))/60).floor
+        time = "#{}h"
       elsif seconds_from_submission > 60
         time = "#{(seconds_from_submission/60).floor}m"
       else
