@@ -1,6 +1,6 @@
 require 'redd'
 require 'imgur'
-require 'redcarpet'
+require 'kramdown'
 
 module SSSProcessor
   def self.process(submission, verbose = true)
@@ -86,13 +86,16 @@ module SSSProcessor
         # imgur albums
         new_index = (text =~ /https?:\/\/.*?imgur\.com\/a\/(\w*)/i)
         if new_index and new_index < earliest_index then
-          earliest_index = new_index
-          match_data = $~
-          id = $~[1]
-          album = $imgur.get_album(id)
-          cover_id = album.cover
-          url = "http://i.imgur.com/#{cover_id}.jpg"
-          source = $~.to_s
+          begin
+            earliest_index = new_index
+            match_data = $~
+            id = $~[1]
+            album = $imgur.get_album(id)
+            cover_id = album.cover
+            url = "http://i.imgur.com/#{cover_id}.jpg"
+            source = $~.to_s
+          rescue => e
+          end
         end
         # imgur link, gets medium thumbnail (m)
         new_index = (text =~ /https?:\/\/.*?imgur\.com\/([A-Za-z0-9_-]*)/i)
@@ -209,7 +212,6 @@ end
 
 
 module SSSWebify
-  @markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: true, tables: true)
   def self.webify(submission,posts)
     html = File.open( 'index.html',"w" )
     html << "<!DOCTYPE html><html><head>"
@@ -228,9 +230,9 @@ module SSSWebify
     # header text
     html << "<div id='explanation'>"
       explanation_file = File.open("explanation.md", "rb")
-      explanation_text = file.read
+      explanation_text = explanation_file.read
       explanation_file.close()
-      html << @markdown.render(explanation_text)
+      html << Kramdown::Document.new(explanation_text).to_html
     html << "</div>"
     posts.sort! { |a,b| b[:created_utc].to_i <=> a[:created_utc].to_i }
     posts.each do |post|

@@ -23,6 +23,7 @@ GEM
     imgur-api (0.0.4)
       httparty
     json (1.8.1)
+    kramdown (1.5.0)
     memoizable (0.4.2)
       thread_safe (~> 0.3, >= 0.3.1)
     multi_json (1.10.1)
@@ -38,4 +39,5 @@ DEPENDENCIES
   cinch
   cinch-identify
   imgur-api
+  kramdown
   redd (= 0.6.4)!
