@@ -209,16 +209,34 @@ end
 
 module SSSWebify
   def self.webify(submission,posts)
-    html = File.open( 'C:\Users\Lemtzas\Dropbox\Public\SSS\output3.html',"w" )
+    html = File.open( 'output.html',"w" )
     html << "<!DOCTYPE html><html><head>"
+    html << ''
     html << '<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">'
     html << "<title>/r/gamedev SSS aggregator</title>"
-    html << '<link rel="stylesheet" type="text/css" href="/u/80446300/SSS/style.css">'
+    html << '<link rel="stylesheet" type="text/css" href="style.css">'
+    html << '<script src="moz_cookie_lib.js"></script>'
+    # html << '<script src="display_last_visit.js"></script>'
+    last_time_after_text = time_since(Time.at(submission.created), Time.now())
+    last_time_expiry = ((Time.at(submission.created) + (60*60*24*7)) - Time.now()).to_i # expire 6 days after post
+    puts last_time_expiry
+    html << %%<script>
+              if(docCookies.hasItem("last_time_after") && docCookies.getItem("last_time_title") === "#{submission.title}") {
+                document.getElementById("last_time").innerHTML = docCookies.getItem("last_time_after");
+              }
+              docCookies.setItem("last_time_after","#{last_time_after_text}", #{last_time_expiry})
+              docCookies.setItem("last_time_title","#{submission.title}", #{last_time_expiry})
+              alert("var set")
+              </script>%
     html << "</head><body>"
-    html << "<header><h1>#{submission.title}</h1><p>Generated on #{Time.now.to_s}</p></header>"
+    html << "<header>
+                <h1>#{submission.title}</h1>
+                <p>Generated on #{Time.now.to_s}</p>
+                <p id='last_time'>You haven't seen these.</p>
+              </header>"
     #posts.shuffle
     posts.each do |post|
-      html << dump_post(submission, post)
+      # html << dump_post(submission, post)
     end
     html << "</body></html>"
     html.close
@@ -227,22 +245,9 @@ module SSSWebify
     private
     def dump_post(submission, post)
       dump = ''
-      seconds_from_submission = (Time.at(post[:created_utc]) - Time.at(submission.created))
-      time = ""
-      if seconds_from_submission > 60*60*24 then
-        days = (seconds_from_submission/(60*60*24)).floor
-        hours = ((seconds_from_submission - days*(60*60*24))/(60*60)).floor
-        time = "#{days}d #{hours}h"
-      elsif seconds_from_submission > 60*60 then
-        time = "#{(seconds_from_submission/(60*60)).floor}h"
-      elsif seconds_from_submission > 60
-        time = "#{(seconds_from_submission/60).floor}m"
-      else
-        time = "#{(seconds_from_submission).floor}s"
-      end
+      time = time_since(Time.at(submission.created), Time.at(post[:created_utc]))
 
-      dump <<   "
-                    <div class='tile'>
+      dump <<   "   <div class='tile'>
                       <a href='#{post[:source]}' class='ss-link'>
                         <img src='#{post[:firstimage]}'></img>
                       </a>
@@ -267,6 +272,25 @@ module SSSWebify
       # wrap it all up
       dump << "</div>\n\n"
       return dump
+    end
+
+    def time_since(first, second)
+      if first > second then
+        first, second = second, first
+      end
+      seconds_from_submission = second - first
+      time = ""
+      if seconds_from_submission > 60*60*24 then
+        days = (seconds_from_submission/(60*60*24)).floor
+        hours = ((seconds_from_submission - days*(60*60*24))/(60*60)).floor
+        time = "#{days}d #{hours}h"
+      elsif seconds_from_submission > 60*60 then
+        time = "#{(seconds_from_submission/(60*60)).floor}h"
+      elsif seconds_from_submission > 60
+        time = "#{(seconds_from_submission/60).floor}m"
+      else
+        time = "#{(seconds_from_submission).floor}s"
+      end
     end
   end
 end
