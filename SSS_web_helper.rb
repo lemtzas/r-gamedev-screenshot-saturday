@@ -161,18 +161,18 @@ module SSSProcessor
         if new_index and new_index < earliest_index then
           # begin
             # get the page
-            vine_url = $~.to_s
-            open( vine_url,
+            site_url = $~.to_s
+            puts "\nopening #{site_url}"
+            open( site_url,
                   "User-Agent" => "Ruby/#{RUBY_VERSION}",) {|f|
               contents = f.read
               # find the og:image data
               og_image_match = contents =~ /property="og:image" content="(.*?)"/
               if og_image_match then
-                puts "vine matched"
                 earliest_index = new_index
                 match_data = $~
                 url =  $~[1].to_s
-                source = vine_url
+                source = site_url
                 icon = "fa fa-vine"
                 rule = "vine"
               end
@@ -182,24 +182,24 @@ module SSSProcessor
           # end
         end
         # indiedb
-        new_index = (text =~ /https?:\/\/[^\s]*?indiedb\.com\/[^\s]*?/i)
+        new_index = (text =~ /https?:\/\/[^\s]*?indiedb\.com\/[^\s\(\)]*/i)
         if new_index and new_index < earliest_index then
           # begin
             # get the page
-            vine_url = $~.to_s
-            open( vine_url,
+            site_url = $~.to_s
+            puts "\nopening #{site_url}"
+            open( site_url,
                   "User-Agent" => "Ruby/#{RUBY_VERSION}",) {|f|
               contents = f.read
               # find the og:image data
               og_image_match = contents =~ /property="og:image" content="(.*?)"/
               if og_image_match then
-                puts "vine matched"
                 earliest_index = new_index
                 match_data = $~
                 url =  $~[1].to_s
-                source = vine_url
-                icon = "fa fa-vine"
-                rule = "vine"
+                source = site_url
+                icon = "fa fa-bookmark"
+                rule = "indiedb"
               end
             }
             
