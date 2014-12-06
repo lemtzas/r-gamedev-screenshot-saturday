@@ -7,6 +7,7 @@
   -moz-border-radius: 20px;
   border-radius: 20px;
   overflow: hidden;
+  z-index: 1;
 }
 
 .reddit, .twitter {
@@ -60,6 +61,11 @@ img {
   padding-left: 3px;
   white-space: nowrap;
   z-index: 20;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  -moz-border-top-left-radius: 10px;
+  -moz-border-top-right-radius: 10px;
+
 }
 
 .time-wrap {
@@ -71,6 +77,8 @@ img {
   padding-right: 3px;
   top: 163px;
   z-index: 10;
+  border-bottom-right-radius: 10px;
+  -moz-border-bottom-left-radius: 10px;
 }
 
 .time-wrap span {
