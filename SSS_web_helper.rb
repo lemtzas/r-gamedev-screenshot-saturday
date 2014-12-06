@@ -237,7 +237,6 @@ module SSSWebify
                 }
                 docCookies.setItem("last_time_after","You were last here #{last_time_after_text} ago.", #{last_time_expiry})
                 docCookies.setItem("last_time_title","#{submission.title}", #{last_time_expiry})
-                alert("var set")
               </script>%
     html << "</body></html>"
     html.close
