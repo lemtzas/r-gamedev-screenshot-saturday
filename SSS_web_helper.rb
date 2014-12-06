@@ -83,6 +83,7 @@ module SSSProcessor
       url = ""
       source = ""
       icon = ""
+      rule = "no match"
       begin #find the first thing
         # imgur albums
         new_index = (text =~ /https?:\/\/[^\s]*?imgur\.com\/a\/(\w+)/i)
@@ -96,6 +97,7 @@ module SSSProcessor
             url = "http://i.imgur.com/#{cover_id}.jpg"
             source = $~.to_s
             icon = "fa fa-folder-open"
+            rule = "imgur /a/"
           rescue => e
           end
         end
@@ -113,6 +115,7 @@ module SSSProcessor
           else
             icon = ""
           end
+          rule = "imgur"
         end
         # gfycat
         new_index = (text =~ /https?:\/\/[^\s]*?gfycat\.com\/(\w+)/i)
@@ -124,6 +127,7 @@ module SSSProcessor
           url = "http://thumbs.gfycat.com/#{$~[1]}-poster.jpg"
           source = $~.to_s
           icon = "fa fa-spinner"
+          rule = "gfycat"
         end
         # recordit.co
         new_index = (text =~ /https?:\/\/[^\s]*?recordit\.co\/(\w+)/i)
@@ -135,9 +139,10 @@ module SSSProcessor
           url = "http://g.recordit.co/#{$~[1]}.gif"
           source = $~.to_s
           icon = "fa fa-spinner"
+          rule = "recordit"
         end
         # raw images
-        new_index = (text =~ /(https?:\/\/[A-Za-z0-9\-\.]+?.*?\.(png|jpg|jpeg|gif))/i)
+        new_index = (text =~ /(https?:\/\/[^\s]+?\.(png|jpg|jpeg|gif))/i)
         if new_index and new_index < earliest_index then
           earliest_index = new_index
           match_data = $~
@@ -148,18 +153,20 @@ module SSSProcessor
           else
             icon = ""
           end
+          rule = "raw image"
         end
         # youtube
-        new_index = (text =~ /https?:\/\/[^\s]*?youtube\.com\/watch\?v=([A-Za-z0-9_-]+)/i)
+        new_index = (text =~ /https?:\/\/[^\s]*?(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]+)/i)
         if new_index and new_index < earliest_index then
           earliest_index = new_index
           match_data = $~
           url =  "http://img.youtube.com/vi/#{$~[1]}/hqdefault.jpg"
           source = $~.to_s
           icon = "fa fa-youtube-play"
+          rule = "youtube"
         end
       end
-      return url, source, icon
+      return url, source, icon, '%-20s' % rule
     end
 
     def youtube(text)
@@ -190,7 +197,7 @@ module SSSProcessor
       post[:author]   = comment.author
       post[:firstline]  = limit_lines(comment.body, 1)
       post[:twolines]   = limit_lines(comment.body, 3)
-      post[:firstimage], post[:source], post[:icon] = firstImage(comment.body)
+      post[:firstimage], post[:source], post[:icon], post[:firstimagerule] = firstImage(comment.body)
       post[:url] = "http://www.reddit.com/r/#{$gamedev.display_name}/comments/#{submission.id}//#{comment.id}"
       post[:twitter_link], post[:twitter_handle] = twitter(comment.body, comment.author_flair_text)
       post[:youtube] = youtube(comment.body)
@@ -216,7 +223,7 @@ module SSSDump
       end
       twitter_count += 1 if post[:twitter_handle].length > 1
       youtube_count += 1 if post[:youtube].length > 1
-      puts "#{post[:url]} #{post[:firstimage].length>1?'img':'   '} #{post[:youtube].length>1?'yt':'  '} #{post[:twitter_handle].length>1?'t':' '} #{post[:firstline]}"
+      puts "#{post[:url]} #{post[:firstimage].length>1?'img':'   '} #{post[:youtube].length>1?'yt':'  '} #{post[:twitter_handle].length>1?'t':' '} #{post[:firstimagerule]} #{post[:firstimage]}"
     end
 
     puts "images #{count-missing}/#{count} (#{perc(count-missing,count)})"
