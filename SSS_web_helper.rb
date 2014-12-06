@@ -235,7 +235,7 @@ module SSSWebify
                 if(docCookies.hasItem("last_time_after") && docCookies.getItem("last_time_title") === "#{submission.title}") {
                   document.getElementById("last_time").innerHTML = docCookies.getItem("last_time_after");
                 }
-                docCookies.setItem("last_time_after","You were last here #{last_time_after_text} ago.", #{last_time_expiry})
+                docCookies.setItem("last_time_after","You were last here #{last_time_after_text} after the post.", #{last_time_expiry})
                 docCookies.setItem("last_time_title","#{submission.title}", #{last_time_expiry})
               </script>%
     html << "</body></html>"
