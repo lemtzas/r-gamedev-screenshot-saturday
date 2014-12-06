@@ -137,7 +137,7 @@ module SSSProcessor
           icon = "fa fa-spinner"
         end
         # raw images
-        new_index = (text =~ /(https?:\/\/[A-Za-z0-9-\.]+?.*?\.(png|jpg|jpeg|gif))/i)
+        new_index = (text =~ /(https?:\/\/[A-Za-z0-9\-\.]+?.*?\.(png|jpg|jpeg|gif))/i)
         if new_index and new_index < earliest_index then
           earliest_index = new_index
           match_data = $~
