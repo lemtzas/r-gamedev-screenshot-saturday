@@ -130,18 +130,6 @@ module SSSProcessor
           icon = "fa fa-spinner"
           rule = "gfycat"
         end
-        # recordit.co
-        new_index = (text =~ /https?:\/\/[^\s]*?recordit\.co\/(\w+)/i)
-        if new_index and new_index < earliest_index then
-          earliest_index = new_index
-          match_data = $~
-          # http://thumbs.gfycat.com/ThinSarcasticFinnishspitz-thumb100.jpg
-          # http://thumbs.gfycat.com/ThinSarcasticFinnishspitz-poster.jpg
-          url = "http://g.recordit.co/#{$~[1]}.gif"
-          source = $~.to_s
-          icon = "fa fa-spinner"
-          rule = "recordit"
-        end
         # raw images
         new_index = (text =~ /(https?:\/\/[^\s]+?\.(png|jpg|jpeg|gif))/i)
         if new_index and new_index < earliest_index then
@@ -181,6 +169,39 @@ module SSSProcessor
           # rescue => e
           # end
         end
+        # youtube
+        new_index = (text =~ /https?:\/\/[^\s]*?(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]+)/i)
+        if new_index and new_index < earliest_index then
+          earliest_index = new_index
+          match_data = $~
+          url =  "http://img.youtube.com/vi/#{$~[1]}/hqdefault.jpg"
+          source = $~.to_s
+          icon = "fa fa-youtube-play"
+          rule = "youtube"
+        end
+      end
+      return url, source, icon, '%-20s' % rule
+    end
+
+    def backupFirstImage(text)
+      earliest_index = text.length
+      match_data = false
+      url = ""
+      source = ""
+      icon = ""
+      rule = "no match"
+        # recordit.co
+        new_index = (text =~ /https?:\/\/[^\s]*?recordit\.co\/(\w+)/i)
+        if new_index and new_index < earliest_index then
+          earliest_index = new_index
+          match_data = $~
+          # http://thumbs.gfycat.com/ThinSarcasticFinnishspitz-thumb100.jpg
+          # http://thumbs.gfycat.com/ThinSarcasticFinnishspitz-poster.jpg
+          url = "http://g.recordit.co/#{$~[1]}.gif"
+          source = $~.to_s
+          icon = "fa fa-spinner"
+          rule = "recordit"
+        end
         # indiedb
         new_index = (text =~ /https?:\/\/[^\s]*?indiedb\.com\/[^\s\(\)]*/i)
         if new_index and new_index < earliest_index then
@@ -206,17 +227,6 @@ module SSSProcessor
           # rescue => e
           # end
         end
-        # youtube
-        new_index = (text =~ /https?:\/\/[^\s]*?(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]+)/i)
-        if new_index and new_index < earliest_index then
-          earliest_index = new_index
-          match_data = $~
-          url =  "http://img.youtube.com/vi/#{$~[1]}/hqdefault.jpg"
-          source = $~.to_s
-          icon = "fa fa-youtube-play"
-          rule = "youtube"
-        end
-      end
       return url, source, icon, '%-20s' % rule
     end
 
@@ -249,6 +259,9 @@ module SSSProcessor
       post[:firstline]  = limit_lines(comment.body, 1)
       post[:twolines]   = limit_lines(comment.body, 3)
       post[:firstimage], post[:source], post[:icon], post[:firstimagerule] = firstImage(comment.body)
+      if post[:firstimage].length == 0 then
+        post[:firstimage], post[:source], post[:icon], post[:firstimagerule] = backupFirstImage(comment.body)
+      end
       post[:url] = "http://www.reddit.com/r/#{$gamedev.display_name}/comments/#{submission.id}//#{comment.id}"
       post[:twitter_link], post[:twitter_handle] = twitter(comment.body, comment.author_flair_text)
       post[:youtube] = youtube(comment.body)
