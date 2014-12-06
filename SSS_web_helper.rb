@@ -209,7 +209,7 @@ end
 
 module SSSWebify
   def self.webify(submission,posts)
-    html = File.open( 'output.html',"w" )
+    html = File.open( 'index.html',"w" )
     html << "<!DOCTYPE html><html><head>"
     html << ''
     html << '<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">'
@@ -234,9 +234,9 @@ module SSSWebify
                 <p>Generated on #{Time.now.to_s}</p>
                 <p id='last_time'>You haven't seen these.</p>
               </header>"
-    #posts.shuffle
+    results[:posts].sort! { |a,b| b[:created_utc].to_i <=> a[:created_utc].to_i }
     posts.each do |post|
-      # html << dump_post(submission, post)
+      html << dump_post(submission, post)
     end
     html << "</body></html>"
     html.close

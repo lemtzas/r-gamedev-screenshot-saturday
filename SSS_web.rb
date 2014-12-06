@@ -56,7 +56,6 @@ submissions.each do |submission|
   # results[:posts].each do |post|
 
   # end
-  results[:posts].sort! { |a,b| b[:created_utc].to_i <=> a[:created_utc].to_i }
 
   SSSDump.stat_dump(results[:posts])
   SSSWebify.webify(submission, results[:posts])
