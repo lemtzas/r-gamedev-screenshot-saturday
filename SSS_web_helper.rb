@@ -258,11 +258,10 @@ module SSSWebify
       dump = ''
       time = time_since(Time.at(submission.created), Time.at(post[:created_utc]))
 
-      dump <<   "   <div class='tile'>
-                      <a href='#{post[:source]}' class='ss-link'>
-                        <img src='#{post[:firstimage]}'></img>
+      dump <<   %%   <div class='tile'>
+                      <a href='#{post[:source]}' class='ss-link' style="background-image: url(#{post[:firstimage]})">
                       </a>
-                      <div class='top-wrap'>"
+                      <div class='top-wrap'>%
       # quick links
       dump << "         <a href='#{post[:url]}' class='reddit'><i class='fa fa-reddit'></i></a>"
       if post[:twitter_link].length > 0 then
