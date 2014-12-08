@@ -2,6 +2,9 @@ require 'redd'
 require 'imgur'
 require 'kramdown'
 require 'open-uri'
+require 'HTMLEntities'
+
+$HTMLEntities = HTMLEntities.new()
 
 module SSSProcessor
   def self.process(submission, verbose = true)
@@ -269,6 +272,34 @@ module SSSProcessor
           rescue => e
           end
         end
+        # ludumdare
+        new_index = (text =~ /https?:\/\/[^\s]*?ludumdare\.com\/[^\s\(\)]*/i)
+        if new_index and new_index < earliest_index then
+          begin
+            # get the page
+            site_url = $~.to_s
+            puts "\nopening #{site_url}"
+            puts "ld"
+            open( site_url,
+                  "User-Agent" => "Ruby/#{RUBY_VERSION}",) {|f|
+              contents = f.read
+              # find the og:image data
+              og_image_match = contents =~ /name="twitter:image" content="(.*?)"/
+              puts $~.to_s
+              if og_image_match then
+                puts "match"
+                earliest_index = new_index
+                match_data = $~
+                url =  $~[1].to_s
+                source = site_url
+                icon = "fa fa-bookmark"
+                rule = "ludumdare"
+              end
+            }
+            
+          rescue => e
+          end
+        end
       return url, source, icon, '%-20s' % rule
     end
 
@@ -297,21 +328,23 @@ module SSSProcessor
 
     def process_post(submission, comment)
       post = {}
-      post[:author]   = comment.author
-      post[:firstline]  = limit_lines(comment.body, 1)
-      post[:twolines]   = limit_lines(comment.body, 3)
+      comment_body_processed = $HTMLEntities.decode(comment.body)
+      comment_author_processed = $HTMLEntities.decode(comment.author)
+      post[:author]   = $HTMLEntities.decode(comment.author)
+      post[:firstline]  = limit_lines(comment_body_processed, 1)
+      post[:twolines]   = limit_lines(comment_body_processed, 3)
       post[:url] = "http://www.reddit.com/r/#{$gamedev.display_name}/comments/#{submission.id}//#{comment.id}"
       begin
-        post[:firstimage], post[:source], post[:icon], post[:firstimagerule] = firstImage(comment.body)
+        post[:firstimage], post[:source], post[:icon], post[:firstimagerule] = firstImage(comment_body_processed)
         if post[:firstimage].length == 0 then
-          post[:firstimage], post[:source], post[:icon], post[:firstimagerule] = backupFirstImage(comment.body)
+          post[:firstimage], post[:source], post[:icon], post[:firstimagerule] = backupFirstImage(comment_body_processed)
         end
       rescue Imgur::NotFoundException, Imgur::UpdateException => e
         puts post[:url]
         raise e
       end
-      post[:twitter_link], post[:twitter_handle] = twitter(comment.body, comment.author_flair_text)
-      post[:youtube] = youtube(comment.body)
+      post[:twitter_link], post[:twitter_handle] = twitter(comment_body_processed, $HTMLEntities.decode(comment.author_flair_text))
+      post[:youtube] = youtube(comment_body_processed)
       post[:created_utc] = comment.created_utc
       post[:created] = comment.created
       if post[:source].length == 0 then
@@ -359,8 +392,8 @@ end
 
 
 module SSSWebify
-  def self.webify(submission,posts)
-    html = File.open( 'index.html',"w" )
+  def self.webify(submission,posts,to_where='index.html')
+    html = File.open( to_where,"w" )
     html << "<!DOCTYPE html><html><head>"
     html << '<meta id="meta" name="viewport" content="width=device-width; initial-scale=0.75" />'
     html << '<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">'
