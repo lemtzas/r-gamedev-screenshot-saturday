@@ -339,7 +339,7 @@ module SSSProcessor
         if post[:firstimage].length == 0 then
           post[:firstimage], post[:source], post[:icon], post[:firstimagerule] = backupFirstImage(comment_body_processed)
         end
-      rescue Imgur::NotFoundException, Imgur::UpdateException => e
+      rescue Exception => e
         puts post[:url]
         raise e
       end
