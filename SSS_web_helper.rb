@@ -109,6 +109,7 @@ module SSSProcessor
             earliest_index = new_index
             match_data = $~
             id = $~[1]
+            puts $~
             image = $imgur.get_image(id)
             url = "http://i.imgur.com/#{id}m.jpg"
             source = $~.to_s
