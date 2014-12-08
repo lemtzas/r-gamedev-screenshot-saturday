@@ -89,21 +89,18 @@ module SSSProcessor
         # imgur albums
         new_index = (text =~ /https?:\/\/[^\s]*?imgur\.com\/a\/(\w+)/i)
         if new_index and new_index < earliest_index then
-          begin
-            earliest_index = new_index
-            match_data = $~
-            id = $~[1]
-            album = $imgur.get_album(id)
-            cover_id = album.cover
-            url = "http://i.imgur.com/#{cover_id}.jpg"
-            source = $~.to_s
-            icon = "fa fa-folder-open"
-            rule = "imgur /a/"
-          rescue => e
-          end
+          earliest_index = new_index
+          match_data = $~
+          id = $~[1]
+          album = $imgur.get_album(id)
+          cover_id = album.cover
+          url = "http://i.imgur.com/#{cover_id}.jpg"
+          source = $~.to_s
+          icon = "fa fa-folder-open"
+          rule = "imgur /a/"
         end
         # imgur link, gets medium thumbnail (m)
-        new_index = (text =~ /https?:\/\/[^\s]*?imgur\.com\/(?:gallery\/)?([A-Za-z0-9_-]+)/i)
+        new_index = (text =~ /https?:\/\/[^\s]*?imgur\.com\/(?!gallery)([A-Za-z0-9_-]+)/i)
         if new_index and new_index < earliest_index then
           begin
             earliest_index = new_index
@@ -118,7 +115,43 @@ module SSSProcessor
               icon = ""
             end
             rule = "imgur"
-          rescue => e
+          rescue Exception => e #Imgur::NotFoundException, Imgur::UpdateException => e
+            puts $~.to_s
+            raise e
+          end
+        end
+        # imgur gallery link
+        new_index = (text =~ /https?:\/\/[^\s]*?imgur\.com\/gallery\/([A-Za-z0-9_-]+)/i)
+        if new_index and new_index < earliest_index then
+          begin #try as album
+            earliest_index = new_index
+            match_data = $~
+            id = $~[1]
+            puts $~.to_s
+            album = $imgur.get_album(id)
+            cover_id = album.cover
+            url = "http://i.imgur.com/#{cover_id}.jpg"
+            source = $~.to_s
+            icon = "fa fa-folder-open"
+            rule = "imgur /gallery/ (album)"
+          rescue Imgur::NotFoundException, Imgur::UpdateException => e
+            begin #try as image
+              earliest_index = new_index
+              match_data = $~
+              id = $~[1]
+              image = $imgur.get_image(id)
+              url = "http://i.imgur.com/#{id}m.jpg"
+              source = $~.to_s
+              if image.animated then
+                icon = "fa fa-spinner"
+              else
+                icon = ""
+              end
+              rule = "imgur /gallery/ (image)"
+            rescue Imgur::NotFoundException, Imgur::UpdateException => e
+              puts $~.to_s
+              raise e
+            end
           end
         end
         # gfycat
@@ -267,11 +300,16 @@ module SSSProcessor
       post[:author]   = comment.author
       post[:firstline]  = limit_lines(comment.body, 1)
       post[:twolines]   = limit_lines(comment.body, 3)
-      post[:firstimage], post[:source], post[:icon], post[:firstimagerule] = firstImage(comment.body)
-      if post[:firstimage].length == 0 then
-        post[:firstimage], post[:source], post[:icon], post[:firstimagerule] = backupFirstImage(comment.body)
-      end
       post[:url] = "http://www.reddit.com/r/#{$gamedev.display_name}/comments/#{submission.id}//#{comment.id}"
+      begin
+        post[:firstimage], post[:source], post[:icon], post[:firstimagerule] = firstImage(comment.body)
+        if post[:firstimage].length == 0 then
+          post[:firstimage], post[:source], post[:icon], post[:firstimagerule] = backupFirstImage(comment.body)
+        end
+      rescue Imgur::NotFoundException, Imgur::UpdateException => e
+        puts post[:url]
+        raise e
+      end
       post[:twitter_link], post[:twitter_handle] = twitter(comment.body, comment.author_flair_text)
       post[:youtube] = youtube(comment.body)
       post[:created_utc] = comment.created_utc
