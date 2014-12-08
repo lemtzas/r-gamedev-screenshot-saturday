@@ -109,7 +109,6 @@ module SSSProcessor
             earliest_index = new_index
             match_data = $~
             id = $~[1]
-            puts match_data.to_s, id.to_s
             image = $imgur.get_image(id)
             url = "http://i.imgur.com/#{id}m.jpg"
             source = $~.to_s
@@ -119,8 +118,8 @@ module SSSProcessor
               icon = ""
             end
             rule = "imgur"
-          rescue => e #Imgur::NotFoundException, Imgur::UpdateException => e
-            puts $~.to_s
+          rescue Exception => e #Imgur::NotFoundException, Imgur::UpdateException => e
+            puts "imgur rule #{$~.to_s} #{$~[1].to_s}"
             raise e
           end
         end
