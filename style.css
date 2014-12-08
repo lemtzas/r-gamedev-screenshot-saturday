@@ -1,3 +1,11 @@
+html {
+  width: auto;
+}
+
+body {
+  width: auto;
+}
+
 .tile {
   width: 200px;
   height: 200px;

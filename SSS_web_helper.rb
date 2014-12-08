@@ -2,7 +2,7 @@ require 'redd'
 require 'imgur'
 require 'kramdown'
 require 'open-uri'
-require 'HTMLEntities'
+require 'htmlentities'
 
 $HTMLEntities = HTMLEntities.new()
 
