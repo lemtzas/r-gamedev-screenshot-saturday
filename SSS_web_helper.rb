@@ -109,7 +109,6 @@ module SSSProcessor
             earliest_index = new_index
             match_data = $~
             id = $~[1]
-            puts $~
             image = $imgur.get_image(id)
             url = "http://i.imgur.com/#{id}m.jpg"
             source = $~.to_s
@@ -119,7 +118,7 @@ module SSSProcessor
               icon = ""
             end
             rule = "imgur"
-          rescue Exception, Error => e #Imgur::NotFoundException, Imgur::UpdateException => e
+          rescue => e #Imgur::NotFoundException, Imgur::UpdateException => e
             puts $~.to_s
             raise e
           end
@@ -138,7 +137,7 @@ module SSSProcessor
             source = $~.to_s
             icon = "fa fa-folder-open"
             rule = "imgur /gallery/ (album)"
-          rescue Exception, Error => e
+          rescue Imgur::NotFoundException, Imgur::UpdateException => e
             begin #try as image
               earliest_index = new_index
               match_data = $~
@@ -152,7 +151,7 @@ module SSSProcessor
                 icon = ""
               end
               rule = "imgur /gallery/ (image)"
-            rescue Exception, Error => e
+            rescue Imgur::NotFoundException, Imgur::UpdateException => e
               puts $~.to_s
               raise e
             end
