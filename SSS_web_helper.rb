@@ -403,7 +403,7 @@ module SSSWebify
     # html << '<script src="display_last_visit.js"></script>'
     html << "</head><body>"
     html << "<header>
-                <h1>#{submission.title}</h1>
+                <h1><a href='#{submission.url}'>#{submission.title}</a></h1>
                 <p>Generated on #{Time.now.to_s}</p>
                 <p id='last_time'>You haven't seen these.</p>
               </header>"
