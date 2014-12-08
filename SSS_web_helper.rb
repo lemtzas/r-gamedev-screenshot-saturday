@@ -137,7 +137,7 @@ module SSSProcessor
             source = $~.to_s
             icon = "fa fa-folder-open"
             rule = "imgur /gallery/ (album)"
-          rescue Imgur::NotFoundException, Imgur::UpdateException => e
+          rescue Exception => e
             begin #try as image
               earliest_index = new_index
               match_data = $~
@@ -151,7 +151,7 @@ module SSSProcessor
                 icon = ""
               end
               rule = "imgur /gallery/ (image)"
-            rescue Imgur::NotFoundException, Imgur::UpdateException => e
+            rescue Exception => e
               puts $~.to_s
               raise e
             end
