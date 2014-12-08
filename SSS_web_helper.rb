@@ -105,49 +105,58 @@ module SSSProcessor
         # imgur link, gets medium thumbnail (m)
         new_index = (text =~ /https?:\/\/[^\s]*?imgur\.com\/(?:gallery\/)?([A-Za-z0-9_-]+)/i)
         if new_index and new_index < earliest_index then
-          earliest_index = new_index
-          match_data = $~
-          id = $~[1]
-          image = $imgur.get_image(id)
-          url = "http://i.imgur.com/#{id}m.jpg"
-          source = $~.to_s
-          if image.animated then
-            icon = "fa fa-spinner"
-          else
-            icon = ""
+          begin
+            earliest_index = new_index
+            match_data = $~
+            id = $~[1]
+            image = $imgur.get_image(id)
+            url = "http://i.imgur.com/#{id}m.jpg"
+            source = $~.to_s
+            if image.animated then
+              icon = "fa fa-spinner"
+            else
+              icon = ""
+            end
+            rule = "imgur"
+          rescue => e
           end
-          rule = "imgur"
         end
         # gfycat
         new_index = (text =~ /https?:\/\/[^\s]*?gfycat\.com\/(\w+)/i)
         if new_index and new_index < earliest_index then
-          earliest_index = new_index
-          match_data = $~
-          # http://thumbs.gfycat.com/ThinSarcasticFinnishspitz-thumb100.jpg
-          # http://thumbs.gfycat.com/ThinSarcasticFinnishspitz-poster.jpg
-          url = "http://thumbs.gfycat.com/#{$~[1]}-poster.jpg"
-          source = $~.to_s
-          icon = "fa fa-spinner"
-          rule = "gfycat"
+          begin
+            earliest_index = new_index
+            match_data = $~
+            # http://thumbs.gfycat.com/ThinSarcasticFinnishspitz-thumb100.jpg
+            # http://thumbs.gfycat.com/ThinSarcasticFinnishspitz-poster.jpg
+            url = "http://thumbs.gfycat.com/#{$~[1]}-poster.jpg"
+            source = $~.to_s
+            icon = "fa fa-spinner"
+            rule = "gfycat"
+          rescue => e
+          end
         end
         # raw images
         new_index = (text =~ /(https?:\/\/[^\s]+?\.(png|jpg|jpeg|gif))/i)
         if new_index and new_index < earliest_index then
-          earliest_index = new_index
-          match_data = $~
-          url =  $~[1]
-          source = $~.to_s
-          if $~[2] == 'gif' then
-            icon = "fa fa-spinner"
-          else
-            icon = ""
+          begin
+            earliest_index = new_index
+            match_data = $~
+            url =  $~[1]
+            source = $~.to_s
+            if $~[2] == 'gif' then
+              icon = "fa fa-spinner"
+            else
+              icon = ""
+            end
+            rule = "raw image"
+          rescue => e
           end
-          rule = "raw image"
         end
         # vine
         new_index = (text =~ /https?:\/\/[^\s]*?(?:vineapp\.com|vine\.co)\/v\/([A-Za-z0-9_-]+)/i)
         if new_index and new_index < earliest_index then
-          # begin
+          begin
             # get the page
             site_url = $~.to_s
             puts "\nopening #{site_url}"
@@ -166,8 +175,8 @@ module SSSProcessor
               end
             }
             
-          # rescue => e
-          # end
+          rescue => e
+          end
         end
         # youtube
         new_index = (text =~ /https?:\/\/[^\s]*?(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]+)/i)
@@ -205,7 +214,7 @@ module SSSProcessor
         # indiedb
         new_index = (text =~ /https?:\/\/[^\s]*?indiedb\.com\/[^\s\(\)]*/i)
         if new_index and new_index < earliest_index then
-          # begin
+          begin
             # get the page
             site_url = $~.to_s
             puts "\nopening #{site_url}"
@@ -224,8 +233,8 @@ module SSSProcessor
               end
             }
             
-          # rescue => e
-          # end
+          rescue => e
+          end
         end
       return url, source, icon, '%-20s' % rule
     end
