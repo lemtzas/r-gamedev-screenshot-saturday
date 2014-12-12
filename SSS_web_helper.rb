@@ -105,7 +105,7 @@ module SSSProcessor
             icon = "fa fa-folder-open"
             rule = "imgur /a/"
           rescue NoMethodError, Exception => e #Imgur::NotFoundException, Imgur::UpdateException => e
-            puts "imgur rule #{$~.to_s} #{$~[1].to_s} failed"
+            puts "imgur album #{$~.to_s} #{$~[1].to_s} failed"
           end
         end
         # imgur link, gets medium thumbnail (m)
@@ -125,7 +125,7 @@ module SSSProcessor
             end
             rule = "imgur"
           rescue NoMethodError, Exception => e #Imgur::NotFoundException, Imgur::UpdateException => e
-            puts "imgur rule #{$~.to_s} #{$~[1].to_s} failed"
+            puts "imgur rule image #{$~.to_s} #{$~[1].to_s} failed"
           end
         end
         # imgur gallery link
