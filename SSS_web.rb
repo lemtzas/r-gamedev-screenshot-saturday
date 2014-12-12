@@ -11,6 +11,8 @@ require "bundler/setup"
 require 'redd'
 require 'imgur'
 require 'SSS_web_helper.rb'
+require 'SSS_webify.rb'
+require 'filewatcher'
 
 $imgur = Imgur.new("fdc4613624fff28")
 
@@ -59,6 +61,16 @@ submissions.each do |submission|
 
   SSSDump.stat_dump(results[:posts])
   SSSWebify.webify(submission, results[:posts])
+
+  FileWatcher.new(["index.liquid","SSS_webify.rb"]).watch do |filename|
+    begin
+      puts "updating site layout #{Time.now.to_s}"
+      load "SSS_webify.rb"
+      SSSWebify.webify(submission, results[:posts])
+    rescue => e
+      puts e
+    end
+  end
 end
 
 STDOUT.flush

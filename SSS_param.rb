@@ -11,6 +11,26 @@ require "bundler/setup"
 require 'redd'
 require 'imgur'
 require 'SSS_web_helper.rb'
+require 'SSS_webify.rb'
+require 'filewatcher'
+require 'optparse'
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: example.rb [options]"
+  opts.on('-s', '--subreddit SUBREDDIT', 'Subreddit to search (defautls to "gamedev")') { |v| options[:query] = v }
+  opts.on('-q', '--query TEXT', 'Search Query; investigates first post (defautls to "flair:SSS")') { |v| options[:query] = v }
+  opts.on('-p', '--id POST_ID', 'Post ID to investigate; overrides Query') { |v| options[:post_id] = v }
+  opts.on('-o', '--output FILE', 'Output File name (defaults to index.html)') { |v| options[:output] = v }
+  opts.on('-i', '--input LIQUID', 'Input Liquid Styling (defaults to index.liquid)') { |v| options[:input] = v }
+  opts.on('-w', '--watch', 'Watch for changes in liquid/webify') { options[:watch] = true }
+  opts.on_tail("-h", "--help", "Show this message") do
+    puts opts
+    exit
+  end
+end.parse!
+
+
 
 $imgur = Imgur.new("fdc4613624fff28")
 
@@ -35,36 +55,57 @@ module SubSearch
   end
 end
 
+options[:subreddit] ||= "gamedev"
+options[:query] ||= "flair:SSS"
+options[:output] ||= "index.html"
+options[:input] ||= "index.liquid"
+
 Redd::Object::Subreddit.include(SubSearch)
 
 $redd = Redd::Client::Unauthenticated.new(
-      user_agent: "/r/gamedev SSS Aggregator v0.1 by /u/lemtzas")
+      user_agent: "/r/gamedev Parameterized Aggregator v0.1 by /u/lemtzas")
 
-$gamedev = $redd.subreddit("gamedev")
+$subreddit = $redd.subreddit(options[:subreddit])
+if options[:post_id] then
+  options[:post_fullname] = "t3_#{options[:post_id]}"
+  puts "getting results for #{options[:post_fullname]}"
+  $submission = $redd.by_id(options[:post_fullname])[0]
+  puts "submission title: #{$submission.title}"
+else
+  puts "checking first result for query: #{options[:query]}"
 
-query = ARGV[0]
-file_out = ARGV[1]
+  submissions = $subreddit.search(options[:query],
+               {:limit => 1,
+                :restrict_sr => true,
+                :sort => "new",
+                :t => "all" })
 
-query ||= "flair:SSS"
-file_out ||= "param.html"
+  $submission = submissions[0]
+end
 
-submissions = $gamedev.search(query,
-             {:limit => 1,
-              :restrict_sr => true,
-              :sort => "new",
-              :t => "all" })
 
-submissions.each do |submission|
-  results = SSSProcessor.process(submission)
-  # results[:images].each do |image|
+results = SSSProcessor.process($submission)
+# results[:images].each do |image|
 
-  # end
-  # results[:posts].each do |post|
+# end
+# results[:posts].each do |post|
 
-  # end
+# end
 
-  SSSDump.stat_dump(results[:posts])
-  SSSWebify.webify(submission, results[:posts], file_out)
+SSSDump.stat_dump(results[:posts])
+SSSWebify.webify($submission, results[:posts], options[:output], options[:input])
+
+if options[:watch] then
+  puts "watching #{options[:input]} and SSS_webify.rb for changes"
+  FileWatcher.new([options[:input],"SSS_webify.rb"]).watch do |filename|
+    begin
+      puts "updating site layout #{Time.now.to_s}"
+      load "SSS_webify.rb"
+      SSSWebify.webify($submission, results[:posts])
+    rescue => e
+      puts e
+    end
+  end
 end
 
 STDOUT.flush

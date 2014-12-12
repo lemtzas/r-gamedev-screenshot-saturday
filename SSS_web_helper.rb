@@ -3,6 +3,8 @@ require 'imgur'
 require 'kramdown'
 require 'open-uri'
 require 'htmlentities'
+require 'liquid'
+require 'liquidFilters.rb'
 
 $HTMLEntities = HTMLEntities.new()
 
@@ -92,15 +94,19 @@ module SSSProcessor
         # imgur albums
         new_index = (text =~ /https?:\/\/[^\s]*?imgur\.com\/a\/(\w+)/i)
         if new_index and new_index < earliest_index then
-          earliest_index = new_index
-          match_data = $~
-          id = $~[1]
-          album = $imgur.get_album(id)
-          cover_id = album.cover
-          url = "http://i.imgur.com/#{cover_id}.jpg"
-          source = $~.to_s
-          icon = "fa fa-folder-open"
-          rule = "imgur /a/"
+          begin
+            earliest_index = new_index
+            match_data = $~
+            id = $~[1]
+            album = $imgur.get_album(id)
+            cover_id = album.cover
+            url = "http://i.imgur.com/#{cover_id}.jpg"
+            source = $~.to_s
+            icon = "fa fa-folder-open"
+            rule = "imgur /a/"
+          rescue NoMethodError, Exception => e #Imgur::NotFoundException, Imgur::UpdateException => e
+            puts "imgur rule #{$~.to_s} #{$~[1].to_s} failed"
+          end
         end
         # imgur link, gets medium thumbnail (m)
         new_index = (text =~ /https?:\/\/[^\s]*?imgur\.com\/(?!gallery)([A-Za-z0-9_-]+)/i)
@@ -118,9 +124,8 @@ module SSSProcessor
               icon = ""
             end
             rule = "imgur"
-          rescue Exception => e #Imgur::NotFoundException, Imgur::UpdateException => e
-            puts "imgur rule #{$~.to_s} #{$~[1].to_s}"
-            raise e
+          rescue NoMethodError, Exception => e #Imgur::NotFoundException, Imgur::UpdateException => e
+            puts "imgur rule #{$~.to_s} #{$~[1].to_s} failed"
           end
         end
         # imgur gallery link
@@ -327,13 +332,17 @@ module SSSProcessor
     end
 
     def process_post(submission, comment)
+      # puts comment.
+      # comment = $redd.by_id(comment.link_id)[0]
       post = {}
       comment_body_processed = $HTMLEntities.decode(comment.body)
       comment_author_processed = $HTMLEntities.decode(comment.author)
+      post[:edited] = comment.edited
       post[:author]   = $HTMLEntities.decode(comment.author)
       post[:firstline]  = limit_lines(comment_body_processed, 1)
       post[:twolines]   = limit_lines(comment_body_processed, 3)
-      post[:url] = "http://www.reddit.com/r/#{$gamedev.display_name}/comments/#{submission.id}//#{comment.id}"
+      post[:body]   = comment.body
+      post[:url] = "http://www.reddit.com/r/#{submission.subreddit_name}/comments/#{submission.id}//#{comment.id}"
       begin
         post[:firstimage], post[:source], post[:icon], post[:firstimagerule] = firstImage(comment_body_processed)
         if post[:firstimage].length == 0 then
@@ -370,7 +379,7 @@ module SSSDump
       end
       twitter_count += 1 if post[:twitter_handle].length > 1
       youtube_count += 1 if post[:youtube].length > 1
-      puts "#{post[:url]} #{post[:firstimage].length>1?'img':'   '} #{post[:youtube].length>1?'yt':'  '} #{post[:twitter_handle].length>1?'t':' '} #{post[:firstimagerule]} #{post[:firstimage]}"
+      puts "#{post[:url]} #{post[:edited]} #{post[:firstimage].length>1?'img':'   '} #{post[:youtube].length>1?'yt':'  '} #{post[:twitter_handle].length>1?'t':' '} #{post[:firstimagerule]} #{post[:firstimage]}"
     end
 
     puts "images #{count-missing}/#{count} (#{perc(count-missing,count)})"
@@ -385,110 +394,6 @@ module SSSDump
     private
     def perc(v1,v2)
       (v1*100.0/v2).floor.to_s + "%"
-    end
-  end
-end
-
-
-
-module SSSWebify
-  def self.webify(submission,posts,to_where='index.html')
-    html = File.open( to_where,"w" )
-    html << "<!DOCTYPE html><html><head>"
-    html << '<meta id="meta" name="viewport" content="width=device-width; initial-scale=0.75" />'
-    html << '<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">'
-    html << "<title>/r/gamedev SSS aggregator</title>"
-    html << '<link rel="stylesheet" type="text/css" href="style.css">'
-    html << '<script src="moz_cookie_lib.js"></script>'
-    # html << '<script src="display_last_visit.js"></script>'
-    html << "</head><body>"
-    html << "<header>
-                <h1><a href='#{submission.url}'>#{submission.title}</a></h1>
-                <p>Generated on #{Time.now.to_s}</p>
-                <p id='last_time'>You haven't seen these.</p>
-              </header>"
-    # header text
-    html << "<div id='explanation'>"
-      explanation_file = File.open("explanation.md", "rb")
-      explanation_text = explanation_file.read
-      explanation_file.close()
-      html << Kramdown::Document.new(explanation_text).to_html
-    html << "</div>"
-    posts.sort! { |a,b| b[:created_utc].to_i <=> a[:created_utc].to_i }
-    posts.each do |post|
-      html << dump_post(submission, post)
-    end
-    # expiry notification
-    last_time_after_text = time_since(Time.at(submission.created), Time.now())
-    last_time_expiry = ((Time.at(submission.created) + (60*60*24*7)) - Time.now()).to_i # expire 6 days after post
-    puts last_time_expiry
-    html << %%<script>
-                if(docCookies.hasItem("last_time_after") && docCookies.getItem("last_time_title") === "#{submission.title}") {
-                  document.getElementById("last_time").innerHTML = docCookies.getItem("last_time_after");
-                }
-                docCookies.setItem("last_time_after","You were last here #{last_time_after_text} after the post.", #{last_time_expiry})
-                docCookies.setItem("last_time_title","#{submission.title}", #{last_time_expiry})
-              </script>%
-    html << "</body></html>"
-    html.close
-  end
-  class << self
-    private
-    def dump_post(submission, post)
-      dump = ''
-      time = time_since(Time.at(submission.created), Time.at(post[:created_utc]))
-
-      dump <<   %%   <div class='tile'>
-                      <a href='#{post[:source]}' class='ss-link' style="background-image: url(#{post[:firstimage]})">%
-      if post[:icon].length > 0 then
-        dump << %%      <i class="#{post[:icon]}"></i>%
-      end
-      dump << %%      </a>
-                      <div class='top-wrap'>%
-      # quick links
-      dump << "         <a href='#{post[:url]}' class='reddit'><i class='fa fa-reddit'></i></a>"
-      if post[:twitter_link].length > 0 then
-        dump << "       <a href='#{post[:twitter_link]}' class='twitter'><i class='fa fa-twitter'></i></a>"
-      end
-      if post[:youtube].length > 0 then
-        dump << "       <a href='#{post[:youtube]}' class='youtube'><i class='fa fa-youtube'></i></a>"
-      end
-
-      # nameplate text
-      if post[:twitter_link].length > 0 then
-        dump << "<a href='#{post[:twitter_link]}'>@#{post[:twitter_handle]}</a>"
-      else
-        dump << "<a href='#{post[:url]}' class='author'>/u/#{post[:author]}</a>"
-      end
-      dump << "</div>"
-
-      # time plate
-      dump << "      <div class='time-wrap'><span>#{time} after</span></div>"
-
-      # wrap it all up
-      dump << "</div>\n\n"
-      return dump
-    end
-
-    def time_since(first, second)
-      if first > second then
-        first, second = second, first
-      end
-      seconds_from_submission = second - first
-      time = ""
-      if seconds_from_submission > 60*60*24 then
-        days = (seconds_from_submission/(60*60*24)).floor
-        hours = ((seconds_from_submission - days*(60*60*24))/(60*60)).floor
-        time = "#{days}d #{hours}h"
-      elsif seconds_from_submission > 60*60 then
-        hours = (seconds_from_submission/(60*60)).floor
-        minutes = ((seconds_from_submission - (hours*60*60))/60).floor
-        time = "#{hours}h #{minutes}m"
-      elsif seconds_from_submission > 60
-        time = "#{(seconds_from_submission/60).floor}m"
-      else
-        time = "#{(seconds_from_submission).floor}s"
-      end
     end
   end
 end

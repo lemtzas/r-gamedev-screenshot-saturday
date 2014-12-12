@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta id="meta" name="viewport" content="width=device-width; initial-scale=0.75" />
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  <title>/r/gamedev SSS aggregator</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <script src="moz_cookie_lib.js"></script>
+  <script src="display_last_visit.js"></script>
+</head>
+<body>
+<header>
+  <h1><a href='{{submission_url}}'>{{submission_title}}</a></h1>
+  <p>Generated on {{now}}</p>
+  <p id='last_time'>You haven't seen these.</p>
+</header>
+
+{% comment %}<div id='explanation'>"
+  explanation_file = File.open("explanation.md", "rb")
+  explanation_text = explanation_file.read
+  explanation_file.close()
+  html << Kramdown::Document.new(explanation_text).to_html
+</div>{% endcomment %}
+
+{% for post in posts %}
+  <div class='tile'>
+    <a href='{{post.source}}' class='ss-link' style="background-image: url({{post.firstimage}})">
+      {% if post.firstimage_icon %}
+        <i class="{{post.firstimage_icon}}"></i>
+      {% endif %}
+    </a>
+    <div class='meta-wrap'>
+      <a href='{{post.url}}' class='reddit'><i class='fa fa-reddit'></i></a>
+      {% for item in post.related %}
+        <a href='{{item.link}}' class='{{item.class}}'><i class='{{item.icon}}'></i></a>
+      {% endfor %}
+      <span class="time">{{post.time_after}} after</span>
+    </div>
+    <div class='title-wrap'>
+      {% if post.title %}
+        <a href='{{post.url}}' class="post_title">{{post.title}}</a>
+      {% elsif post.twitter_link %}
+        <a href='{{post.twitter_link}}'>@{{post.twitter_handle}}</a>
+      {% else %}
+        <a href='{{post.url}}' class='author'>/u/{{post.author}}</a>
+      {% endif %}
+    </div>
+  </div>
+{% endfor %}
+
+<script>
+  if(docCookies.hasItem("{{fullname}}_after")) {
+    document.getElementById("last_time").innerHTML = docCookies.getItem("last_time_after");
+  }
+  docCookies.setItem("{{fullname}}_after","You were last here {{last_time_after_text}} after the post.", {{last_time_expiry}})
+</script>
+</body>
+</html>
