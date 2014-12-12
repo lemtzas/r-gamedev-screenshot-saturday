@@ -14,8 +14,15 @@ require 'SSS_web_helper.rb'
 require 'SSS_webify.rb'
 require 'filewatcher'
 require 'optparse'
+require 'yaml'
 
-options = {}
+
+
+if File.exist?('conf.yaml') then
+  options = YAML.load_file('conf.yaml')
+else
+  options = {}
+end
 OptionParser.new do |opts|
   opts.banner = "Usage: example.rb [options]"
   opts.on('-s', '--subreddit SUBREDDIT', 'Subreddit to search (defautls to "gamedev")') { |v| options[:query] = v }
@@ -23,6 +30,8 @@ OptionParser.new do |opts|
   opts.on('-p', '--id POST_ID', 'Post ID to investigate; overrides Query') { |v| options[:post_id] = v }
   opts.on('-o', '--output FILE', 'Output File name (defaults to index.html)') { |v| options[:output] = v }
   opts.on('-i', '--input LIQUID', 'Input Liquid Styling (defaults to index.liquid)') { |v| options[:input] = v }
+  opts.on('-c', '--credentials USERNAME PASSWORD', 'Authentication Credentials for reddit (defaults to username/password keys in conf.yaml)') { |v,w| options[:username] = v; options[:password] = w }
+  opts.on('-k', '--imgur_key KEY', 'Authentication key for imgur (defaults to imgur_key in conf.yaml)') { |v| options[:imgur_key] = v}
   opts.on('-w', '--watch', 'Watch for changes in liquid/webify') { options[:watch] = true }
   opts.on_tail("-h", "--help", "Show this message") do
     puts opts
@@ -30,9 +39,16 @@ OptionParser.new do |opts|
   end
 end.parse!
 
+options[:username] ||= "USERNAME HERE"
+options[:password] ||= "PASSWORD HERE"
+options[:useragent] ||= "/r/gamedev Parameterized Aggregator v0.1 by /u/lemtzas"
+options[:subreddit] ||= "gamedev"
+options[:query] ||= "flair:SSS"
+options[:output] ||= "index.html"
+options[:input] ||= "index.liquid"
+options[:imgur_key] ||= "KEY HERE"
 
-
-$imgur = Imgur.new("fdc4613624fff28")
+File.open("conf.yaml",'w') {|f| f.write(YAML.dump(options))}
 
 module SubSearch
   # Look for subreddits matching the given query.
@@ -55,15 +71,17 @@ module SubSearch
   end
 end
 
-options[:subreddit] ||= "gamedev"
-options[:query] ||= "flair:SSS"
-options[:output] ||= "index.html"
-options[:input] ||= "index.liquid"
-
 Redd::Object::Subreddit.include(SubSearch)
 
-$redd = Redd::Client::Unauthenticated.new(
-      user_agent: "/r/gamedev Parameterized Aggregator v0.1 by /u/lemtzas")
+if options[:username] != "USERNAME HERE" and options[:password] != "PASSWORD HERE" then
+  $redd = Redd::Client::Authenticated.new_from_credentials(
+        options[:username], options[:password],
+        user_agent: options[:useragent])
+else
+  $redd = Redd::Client::Unauthenticated.new(user_agent: options[:useragent])
+end
+
+$imgur = Imgur.new(options[:imgur_key])
 
 $subreddit = $redd.subreddit(options[:subreddit])
 if options[:post_id] then
