@@ -22,6 +22,17 @@ if File.exist?('conf.yaml') then
   options = YAML.load_file('conf.yaml')
 else
   options = {}
+
+  options[:username] ||= "USERNAME HERE"
+  options[:password] ||= "PASSWORD HERE"
+  options[:useragent] ||= "/r/gamedev Parameterized Aggregator v0.1 by /u/lemtzas"
+  options[:subreddit] ||= "gamedev"
+  options[:query] ||= "flair:SSS"
+  options[:output] ||= "index.html"
+  options[:input] ||= "index.liquid"
+  options[:imgur_key] ||= "KEY HERE"
+
+  File.open("conf.yaml",'w') {|f| f.write(YAML.dump(options))}
 end
 OptionParser.new do |opts|
   opts.banner = "Usage: example.rb [options]"
@@ -38,17 +49,6 @@ OptionParser.new do |opts|
     exit
   end
 end.parse!
-
-options[:username] ||= "USERNAME HERE"
-options[:password] ||= "PASSWORD HERE"
-options[:useragent] ||= "/r/gamedev Parameterized Aggregator v0.1 by /u/lemtzas"
-options[:subreddit] ||= "gamedev"
-options[:query] ||= "flair:SSS"
-options[:output] ||= "index.html"
-options[:input] ||= "index.liquid"
-options[:imgur_key] ||= "KEY HERE"
-
-File.open("conf.yaml",'w') {|f| f.write(YAML.dump(options))}
 
 module SubSearch
   # Look for subreddits matching the given query.
