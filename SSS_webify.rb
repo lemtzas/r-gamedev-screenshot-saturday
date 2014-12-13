@@ -131,6 +131,7 @@ module SSSWebify
       else
         time = "#{(seconds_from_submission).floor}s"
       end
+      return time
     end
   end
 end

@@ -50,7 +50,7 @@
 
 <script>
   if(docCookies.hasItem("{{fullname}}_after")) {
-    document.getElementById("last_time").innerHTML = docCookies.getItem("last_time_after");
+    document.getElementById("last_time").innerHTML = docCookies.getItem("{{fullname}}_after");
   }
   docCookies.setItem("{{fullname}}_after","You were last here {{last_time_after_text}} after the post.", {{last_time_expiry}})
 </script>
