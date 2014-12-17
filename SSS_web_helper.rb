@@ -321,7 +321,7 @@ module SSSProcessor
     def twitter(text, flair)
       possible_handles = Queue.new
       # account link only
-      if text =~ /(?:https?:\/\/twitter\.com\/(\w+))(?!\/status)/i then
+      if text =~ /https?:\/\/twitter\.com\/(\w+(?=\/|\s|\)))(?!\/status)/i then
         possible_handles.push($~[1])
       end
       # any twitter link
