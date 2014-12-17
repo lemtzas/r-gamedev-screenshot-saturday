@@ -319,13 +319,23 @@ module SSSProcessor
     end
 
     def twitter(text, flair)
-      
-      result = /(https?:\/\/twitter\.com\/(\w+))/i.match(text)
-      result2 = /^@(\w+)/.match(flair)
-      if result then
-        return result[1], result[2]
-      elsif result2 then
-        return "http://twitter.com/#{result2[1]}", result2[1]
+      possible_handles = Queue.new
+      # account link only
+      if text =~ /(https?:\/\/twitter\.com\/(\w+))(?!\/status)/i then
+        possible_handles.push($~[1])
+      end
+      # any twitter link
+      if text =~ /(https?:\/\/twitter\.com\/(\w+))/i then
+        possible_handles.push($~[1])
+      end
+      # check flair for @twitterhandles
+      if flair =~ /^@(\w+)/ then
+        possible_handles.push($~[1])
+      end
+
+      if not possible_handles.empty? then
+        priority_handle = possible_handles.pop
+        return "http://twitter.com/#{priority_handle}", priority_handle
       else
         return '',''
       end
