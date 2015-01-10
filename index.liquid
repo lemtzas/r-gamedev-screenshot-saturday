@@ -23,7 +23,7 @@
 {% for post in posts %}
   <div class='tile'>
     <a href='{{post.cover_url}}' class='ss-link' style="background-image: url({{post.cover_bg}})">
-      {% if post.firstimage_icon %}
+      {% if post.cover_url %}
         <i class="{{post.cover_icon}}"></i>
       {% endif %}
     </a>
