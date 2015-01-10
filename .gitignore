@@ -1,2 +1,4 @@
 *.html
 conf.yaml
+*.sqlite
+temp_thumb.png

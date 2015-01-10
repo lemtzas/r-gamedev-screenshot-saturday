@@ -60,10 +60,10 @@ module SSSWebify
         dump['related'].push({'link' => post[:youtube], 'class' => 'youtube', 'icon' => 'fa fa-youtube-play'})
         dump['youtube'] = post[:youtube]
       end
-      # user specified data
-      if post[:author] == 'lemtzas' then
-        puts post[:body]
-      end
+      # # user specified data
+      # if post[:author] == 'lemtzas' then
+      #   puts post[:body]
+      # end
       post[:body].scan(/\[.*?\]\(\/botdata\s*?(?:\"|\')(.*?)\:(.*?)(?:\"|\')\)/i) { |directive,data|
         # puts "#{directive} -> '#{data}'"
         case directive
