@@ -17,7 +17,7 @@ class TwitterScanner < PostScanner
 
     # any twitter link
     data[:urls].each do |url|
-      if url =~ /(https?:\/\/twitter\.com\/(\w+))/i then
+      if url =~ /https?:\/\/twitter\.com\/(\w+)/i then
         possible_handles << $~[1]
       end
     end
