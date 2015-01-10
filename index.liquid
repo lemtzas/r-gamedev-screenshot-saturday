@@ -12,15 +12,13 @@
 <header>
   <h1><a href='{{submission_url}}'>{{submission_title}}</a></h1>
   <p>Generated on {{now}}</p>
+  <p><a href="{{album_url}}">Imgur Full Thumbnail Album</a></p>
   <p id='last_time'>You haven't seen these.</p>
 </header>
 
-{% comment %}<div id='explanation'>"
-  explanation_file = File.open("explanation.md", "rb")
-  explanation_text = explanation_file.read
-  explanation_file.close()
-  html << Kramdown::Document.new(explanation_text).to_html
-</div>{% endcomment %}
+<div id='explanation'>
+  {{explanation_html}}
+</div>
 
 {% for post in posts %}
   <div class='tile'>

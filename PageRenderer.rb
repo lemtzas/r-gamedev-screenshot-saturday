@@ -8,7 +8,7 @@ $HTMLEntities = HTMLEntities.new()
 
 class PageRenderer
   def initialize()
-    
+     
   end
 
   def render(liquid_data, template='index.liquid', to_where='index.html')
@@ -20,6 +20,13 @@ class PageRenderer
       File.open( template,"r" ) { |f|
         @template = Liquid::Template.parse(f.read)
       }
+
+      puts "Reading explanation file."
+      explanation_file = File.open("explanation.md", "rb")
+      explanation_text = explanation_file.read
+      explanation_file.close()
+      html = Kramdown::Document.new(explanation_text).to_html
+      liquid_data["explanation_html"] = html
 
       puts "Writing HTML output to #{to_where}"
       # write the output

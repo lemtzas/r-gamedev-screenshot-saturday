@@ -99,13 +99,15 @@ class PageProcessor
     # end
     # @album.description = "Screenshot Saturday Aggregation - last updated #{Time.now.to_s}"
     # @album.update(@imgur)
+    packed_posts.sort! { |a,b| b[:created_utc].to_i <=> a[:created_utc].to_i }
     liquid_data[:posts] = packed_posts
     liquid_data[:fullname] = submission.fullname
-    liquid_data[:now] = Time.now.to_s,
-    liquid_data[:submission_title] = submission.title,
-    liquid_data[:submission_url] = submission.url,
-    liquid_data[:last_time_after_text] = time_since(Time.at(submission.created), Time.now()),
+    liquid_data[:now] = Time.now.to_s
+    liquid_data[:submission_title] = submission.title
+    liquid_data[:submission_url] = submission.url
+    liquid_data[:last_time_after_text] = time_since(Time.at(submission.created), Time.now())
     liquid_data[:last_time_expiry] = ((Time.at(submission.created) + (60*60*24*7)) - Time.now()).to_i # expire 6 days after post,
+    liquid_data[:album_url] = @album.link
 
     return liquid_data
   end
