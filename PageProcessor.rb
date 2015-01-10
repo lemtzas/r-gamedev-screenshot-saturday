@@ -189,11 +189,15 @@ class PageProcessor
 
   def extract_urls(text)
     # collect all the URLs
-    urls = []
+    urls = PQueue.new(){ |a,b|
+      a.begin(0) < b.begin(0)
+    }
+    # urls = []
     text.scan(URL_REGEX) { |url|
       # puts "push '#{url.to_s}' #{$~.begin(0)}"
-      urls.push(url)
+
+      urls << $~
     }
-    return urls
+    return urls.to_a.collect{|a| a[0].to_s}
   end
 end
