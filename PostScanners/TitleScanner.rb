@@ -14,10 +14,13 @@ class TitleScanner < PostScanner
     }
 
     #guess
-    if not data[:title] and data[:firstline] =~ /\*\*(.{,40})\*\*/i then
+    if not data[:title] and data[:firstline] =~ /\*\*(.{,40}?)\*\*/i then
       data[:title] = $~[1].to_s
     end
-    if not data[:title] and data[:firstline] =~ /\#+\s*(.{,40})\n/i then
+    if not data[:title] and data[:firstline] =~ /\#+\s*(.{,40}?)\n/i then
+      data[:title] = $~[1].to_s
+    end
+    if not data[:title] and data[:firstline] =~ /\*\*\[(.{,40}?)\]\(.*?\)\*\*.*?\n/i then
       data[:title] = $~[1].to_s
     end
   end
