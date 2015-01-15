@@ -3,6 +3,8 @@ require 'sqlite3'
 require 'UrlFinders/sqlite-cache.rb'
 require 'UrlFinders/imgur.rb'
 require 'UrlFinders/plain.rb'
+require 'UrlFinders/gfycat.rb'
+require 'UrlFinders/youtube.rb'
 
 $HTMLEntities = HTMLEntities.new()
 
@@ -16,6 +18,8 @@ class ImageProcessor
     @image_finders = []
     @image_finders << PlainFinder.new(0)
     @image_finders << ImgurFinder.new(0)
+    @image_finders << GfycatFinder.new(0)
+    @image_finders << YoutubeFinder.new(0)
   end
 
   def process(packed_data)

@@ -42,7 +42,12 @@ class PageRenderer
 
   def prepare_liquid_variables(liquid_data)
     liquid_data = liquid_data.deep_stringify_keys
-    puts liquid_data['posts'][0].to_yaml
+    # puts liquid_data['posts'][0].to_yaml
+    liquid_data["posts"].select{|i| i["title"] and i["title"].include?("Speed Of Time")}.each do |i|
+      puts "--------------------------------------------------------------------------------------"
+      puts "--------------------------------------------------------------------------------------"
+      puts i.to_yaml
+    end
     return liquid_data
   end
 end

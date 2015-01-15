@@ -8,8 +8,8 @@ class ImgurFinder < UrlFinder
     images = []
     # imgur albums
     if url =~ /https?:\/\/[^\s]*?imgur\.com\/a\/(\w+)/i then
+      #TODO: fix to match album links...
       begin
-        earliest_index = new_index
         match_data = $~
         id = $~[1]
         album = $imgur.get_album(id)
@@ -24,13 +24,14 @@ class ImgurFinder < UrlFinder
         }
         images << data
       rescue NoMethodError, Exception => e #Imgur::NotFoundException, Imgur::UpdateException => e
-        puts "imgur album #{$~.to_s} #{$~[1].to_s} failed"
+        $stderr.puts e.message
+        $stderr.puts "imgur album #{$~.to_s} #{$~[1].to_s} failed"
       end
     end
     # imgur link, gets medium thumbnail (m)
     if url =~ /https?:\/\/[^\s]*?imgur\.com\/(?!gallery)([A-Za-z0-9_-]+)/i then
+      #TODO: fix to not match album links
       begin
-        earliest_index = new_index
         match_data = $~
         id = $~[1]
         image = $imgur.get_image(id)
@@ -49,13 +50,12 @@ class ImgurFinder < UrlFinder
         }
         images << data
       rescue NoMethodError, Exception => e #Imgur::NotFoundException, Imgur::UpdateException => e
-        puts "imgur rule image #{$~.to_s} #{$~[1].to_s} failed"
+        $stderr.puts "imgur rule image #{$~.to_s} #{$~[1].to_s} failed"
       end
     end
     # imgur gallery link
     if url =~ /https?:\/\/[^\s]*?imgur\.com\/gallery\/([A-Za-z0-9_-]+)/i then
       begin #try as album
-        earliest_index = new_index
         match_data = $~
         id = $~[1]
         puts $~.to_s
@@ -72,7 +72,6 @@ class ImgurFinder < UrlFinder
         images << data
       rescue Imgur::NotFoundException, Imgur::UpdateException => e
         begin #try as image
-          earliest_index = new_index
           match_data = $~
           id = $~[1]
           image = $imgur.get_image(id)
@@ -89,7 +88,7 @@ class ImgurFinder < UrlFinder
             :rule => "imgur /gallery/ (image)"
           }
         rescue Imgur::NotFoundException, Imgur::UpdateException => e
-          puts $~.to_s
+          $stderr.puts $~.to_s
           raise e
         end
       end
@@ -116,7 +115,7 @@ class ImgurFinder < UrlFinder
         }
         images.push[data]
       rescue NoMethodError, Exception => e #Imgur::NotFoundException, Imgur::UpdateException => e
-        puts "imgur album #{match.to_s} #{match[1].to_s} failed"
+        $stderr.puts "imgur album #{match.to_s} #{match[1].to_s} failed"
       end
     }
 

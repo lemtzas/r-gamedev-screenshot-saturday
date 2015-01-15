@@ -2,3 +2,4 @@
 conf.yaml
 *.sqlite
 temp_thumb.png
+err.log

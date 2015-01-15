@@ -35,8 +35,7 @@ class SqliteCache < UrlFinder
     # Create a database
     rows = @db.execute <<-SQL
       create table IF NOT EXISTS image_cache (
-        image_id integer primary key,
-        url text,
+        url text primary key,
         data blob
       );
     SQL
@@ -52,7 +51,7 @@ class SqliteCache < UrlFinder
 
   def handle(url)
     data = []
-    continue = 10
+    continue = 2
     while continue > 0 do
       begin
         @get.execute(url) { |results|
@@ -73,7 +72,16 @@ class SqliteCache < UrlFinder
 
   def store(url, results)
       puts "    CACHING #{url}"
-    @put.execute(url, SQLite3::Blob.new(results.to_json))
+    continue = 2
+    while continue > 0 do
+      begin
+      @put.execute(url, SQLite3::Blob.new(results.to_json))
+      return
+      rescue Exception => e
+        continue -= 1
+        puts "///////////////////////////////////////////////////////////////// DB ERROR #{e.message}"
+      end
+    end
   end
 end
 
