@@ -95,35 +95,6 @@ class ImgurFinder < UrlFinder
     end
     return images
   end
-
-  def scan(post)
-    images = []
-    # imgur albums
-    text = post.body
-    text.scan(/https?:\/\/[^\s]*?imgur\.com\/a\/(\w+)/i) { |match|
-      begin
-        id = match[1]
-        album = @imgur.get_album(id)
-        cover_id = album.cover
-        url = "http://i.imgur.com/#{cover_id}.jpg"
-        data = {
-          :priority => @priority,
-          :url => "http://i.imgur.com/#{cover_id}.jpg",
-          :source => match.to_s,
-          :icon => "fa fa-folder-open",
-          :rule => "imgur /a/"
-        }
-        images.push[data]
-      rescue NoMethodError, Exception => e #Imgur::NotFoundException, Imgur::UpdateException => e
-        $stderr.puts "imgur album #{match.to_s} #{match[1].to_s} failed"
-      end
-    }
-
-    return images
-
-    # OLD
-    
-  end
 end
 
 # $url_finders << ImgurFinder.new(1)
