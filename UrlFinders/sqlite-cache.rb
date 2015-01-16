@@ -64,7 +64,7 @@ class SqliteCache < UrlFinder
         return data
       rescue Exception => e
         continue -= 1
-        puts "///////////////////////////////////////////////////////////////// DB ERROR #{e.message}"
+        stderr.puts "///////////////////////////////////////////////////////////////// DB ERROR #{e.message}"
       end
     end
     return data
@@ -79,7 +79,7 @@ class SqliteCache < UrlFinder
       return
       rescue Exception => e
         continue -= 1
-        puts "///////////////////////////////////////////////////////////////// DB ERROR #{e.message}"
+        stderr.puts "///////////////////////////////////////////////////////////////// DB ERROR #{e.message}"
       end
     end
   end

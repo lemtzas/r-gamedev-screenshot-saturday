@@ -5,6 +5,7 @@ require 'UrlFinders/imgur.rb'
 require 'UrlFinders/plain.rb'
 require 'UrlFinders/gfycat.rb'
 require 'UrlFinders/youtube.rb'
+require 'UrlFinders/vine.rb'
 
 $HTMLEntities = HTMLEntities.new()
 
@@ -20,6 +21,7 @@ class ImageProcessor
     @image_finders << ImgurFinder.new(0)
     @image_finders << GfycatFinder.new(0)
     @image_finders << YoutubeFinder.new(0)
+    @image_finders << VineFinder.new(0)
   end
 
   def process(packed_data)
