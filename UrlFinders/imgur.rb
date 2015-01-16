@@ -29,7 +29,7 @@ class ImgurFinder < UrlFinder
       end
     end
     # imgur link, gets medium thumbnail (m)
-    if url =~ /https?:\/\/[^\s]*?imgur\.com\/(?!gallery)([A-Za-z0-9_-]+)/i then
+    if url =~ /https?:\/\/[^\s]*?imgur\.com\/(?!gallery|a\/)([A-Za-z0-9_-]+)/i then
       #TODO: fix to not match album links
       begin
         match_data = $~
@@ -46,7 +46,7 @@ class ImgurFinder < UrlFinder
           :url => "http://i.imgur.com/#{id}m.jpg",
           :source => $~.to_s,
           :icon => icon,
-          :rule => "imgur plain/gallery"
+          :rule => "imgur plain"
         }
         images << data
       rescue NoMethodError, Exception => e #Imgur::NotFoundException, Imgur::UpdateException => e

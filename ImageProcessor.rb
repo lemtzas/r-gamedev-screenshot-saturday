@@ -62,7 +62,6 @@ class ImageProcessor
       end
       if not results.empty? then
         puts "loaded cache of '#{augment[:url].to_s}'"
-        my_urls = nil
       end
     }
 
