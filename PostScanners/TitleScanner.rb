@@ -25,4 +25,3 @@ class TitleScanner < PostScanner
     end
   end
 end
-

@@ -6,6 +6,7 @@ require 'UrlFinders/plain.rb'
 require 'UrlFinders/gfycat.rb'
 require 'UrlFinders/youtube.rb'
 require 'UrlFinders/vine.rb'
+require 'UrlFinders/override.rb'
 
 $HTMLEntities = HTMLEntities.new()
 
@@ -29,25 +30,42 @@ class ImageProcessor
     images = PQueue.new(){ |a,b| 
       begin
         if a[:priority] == b[:priority] then
-          a[:position] < b[:position]
+          a[:position] > b[:position]
         else
-          a[:priority] < b[:priority]
+          a[:priority] > b[:priority]
         end
       rescue Exception => e
         puts a.to_s, b.to_s
         raise e
       end
     }
+    # find all the links
     url_augments = []
-    position = 0
-    packed_data[:urls].each_with_index do |url,index|
-      url_augments << {
-        :index => index,
-        :url => url,
-        :position => position,
-        :data => []
+    begin
+      # first add override directives
+      packed_data[:body].scan(/\[.*?\]\(\/botdata\s*?(?:\"|\')(.*?)\:(.*?)(?:\"|\')\)/i) { |directive,value|
+        if directive == 'thumb' then
+          url_augments << {
+            :index => -1,
+            :url => value,
+            :position => -1,
+            :data => []
+          }
+          break
+        end
+
       }
-      position += 1
+      # add all regular links
+      position = 0
+      packed_data[:urls].each_with_index do |url,index|
+        url_augments << {
+          :index => index,
+          :url => url,
+          :position => position,
+          :data => []
+        }
+        position += 1
+      end
     end
     # submission.fullname, data[:fullname], 
 
@@ -57,6 +75,7 @@ class ImageProcessor
       results.each do |result|
         # the position and priority is needed for sorting information, so copy/default them
         # result[:position] = position
+            result[:index] = augment[:index]
         result[:priority] = result[:priority] or 10
         result[:position] = augment[:position]
         # images.push(result)
@@ -70,6 +89,9 @@ class ImageProcessor
     # pass remaining urls to each handler, cache results and add to list, remove if found
     @image_finders.each do |url_finder|
       puts "RUNNING #{url_finder.class.name.upcase}"
+      # if url_finder.respond_to? :scan then
+      #   url_finder.scan(packed_data[:body_decoded])
+      # end
       url_augments.each { |augment|
         if augment[:data].empty? then
           url = augment[:url]
@@ -78,6 +100,7 @@ class ImageProcessor
           results.each do |result|
             puts "     - #{result[:url]}"
             # the position and priority is needed for sorting information, so copy/default them
+            result[:index] = augment[:index]
             result[:position] = augment[:position]
             result[:priority] = result[:priority] or 10
             result[:retrieval_time] = Time.now.utc

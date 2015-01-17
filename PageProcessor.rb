@@ -167,6 +167,7 @@ class PageProcessor
     data[:edited]         = comment.edited
     data[:fullname]       = comment.fullname
     data[:body_decoded]   = $HTMLEntities.decode(comment.body)
+    data[:html]           = comment.body_html
     data[:author]         = $HTMLEntities.decode(comment.author)
     data[:firstline]      = limit_lines(data[:body_decoded], 1)
     data[:twolines]       = limit_lines(data[:body_decoded], 3)
@@ -190,7 +191,7 @@ class PageProcessor
   def extract_urls(text)
     # collect all the URLs
     urls = PQueue.new(){ |a,b|
-      a.begin(0) < b.begin(0)
+      a.begin(0) > b.begin(0)
     }
     # urls = []
     text.scan(URL_REGEX) { |url|
