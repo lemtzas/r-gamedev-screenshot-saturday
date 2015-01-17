@@ -88,3 +88,13 @@ img {
     from {-webkit-transform: rotate(0deg);}
     to   {-webkit-transform: rotate(359deg);}
 }
+
+
+.fancybox-title-over-wrap {
+    width: 100%;
+    padding: 0;
+}
+
+.fancybox-title-over-wrap > div {
+    padding: 10px;
+}

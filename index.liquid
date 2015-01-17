@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+  <!-- Add jQuery library -->
+  <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+  <!-- Add mousewheel plugin (this is optional) -->
+  <script type="text/javascript" src="/fancybox/lib/jquery.mousewheel-3.0.6.pack.js"></script>
+
+  <!-- Add fancyBox -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen" />
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.pack.js?v=2.1.5"></script>
+
   <meta id="meta" name="viewport" content="width=device-width; initial-scale=0.75" />
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
   <title>/r/gamedev SSS aggregator</title>
@@ -22,7 +33,7 @@
 
 {% for post in posts %}
   <div class='tile'>
-    <a href='{{post.cover_url}}' class='ss-link' style="background-image: url({{post.cover_bg}})">
+    <a href='{{post.cover_url}}' class='ss-link fancybox' style="background-image: url({{post.cover_bg}})">
       {% if post.cover_url %}
         <i class="{{post.cover_icon}}"></i>
       {% endif %}
@@ -52,5 +63,25 @@
   }
   docCookies.setItem("{{fullname}}_after","You were last here {{last_time_after_text}} after the post.", {{last_time_expiry}})
 </script>
+<!--<script type="text/javascript">
+  $(document).ready(function() {
+    $(".fancybox").fancybox({
+    afterShow: function() {
+        $(".fancybox-title").wrapInner('<div />').show();
+        
+        $(".fancybox-wrap").hover(function() {
+            $(".fancybox-title").show();
+        }, function() {
+            $(".fancybox-title").hide();
+        });
+    },
+    helpers : {
+        title: {
+            type: 'over'
+        }
+    } 
+});
+  });
+</script>-->
 </body>
 </html>

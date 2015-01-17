@@ -2,6 +2,14 @@
 
 **Update:**
 
-*Imgur, Youtube, Gfycat links are supported. Twitter links will be scanned for handles, but not images (yet).*
+*Imgur, Youtube, Gfycat, Vine, og:image, and twitter:image links are supported. Twitter links will be scanned for handles, but not images (yet).*
 
-*Imgur /a/ links do not currently work.*
+**Key:**
+
+The symbol indicates the type of the first image (and what you'll get if you click on it)
+
+<i class="fa fa-spinner" title=""></i> Animated \\
+<i class="fa fa-folder-open" title=""></i> Album \\
+<i class="fa fa-youtube-play" title=""></i> Youtube \\
+<i class="fa fa-vine" title=""></i> Vine \\
+<i class="fa fa-binoculars" title=""></i> OpenGraph or Twitter Card

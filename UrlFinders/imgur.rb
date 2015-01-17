@@ -13,7 +13,7 @@ class ImgurFinder < UrlFinder
         match_data = $~
         id = $~[1]
         album = $imgur.get_album(id)
-        cover_id = album.cover
+        cover_id = album.cover 
 
         data = {
           :priority => @priority,

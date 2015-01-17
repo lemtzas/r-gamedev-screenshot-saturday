@@ -6,7 +6,7 @@ require 'UrlFinders/plain.rb'
 require 'UrlFinders/gfycat.rb'
 require 'UrlFinders/youtube.rb'
 require 'UrlFinders/vine.rb'
-require 'UrlFinders/override.rb'
+require 'UrlFinders/opengraph.rb'
 
 $HTMLEntities = HTMLEntities.new()
 
@@ -17,12 +17,18 @@ class ImageProcessor
     @imgur = imgur
 
     @cacheFinder = SqliteCache.new(db)
+
+
+
+    # the order here is important, if an earlier one matches a url, the later ones won't be called for it.
+    # lower priorities will be sorted after higher priorities
     @image_finders = []
     @image_finders << PlainFinder.new(0)
     @image_finders << ImgurFinder.new(0)
     @image_finders << GfycatFinder.new(0)
     @image_finders << YoutubeFinder.new(0)
     @image_finders << VineFinder.new(0)
+    @image_finders << OGFinder.new(-10)
   end
 
   def process(packed_data)
@@ -32,7 +38,7 @@ class ImageProcessor
         if a[:priority] == b[:priority] then
           a[:position] > b[:position]
         else
-          a[:priority] > b[:priority]
+          a[:priority] < b[:priority]
         end
       rescue Exception => e
         puts a.to_s, b.to_s

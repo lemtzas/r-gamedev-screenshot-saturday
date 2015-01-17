@@ -19,7 +19,7 @@ class VineFinder < UrlFinder
             data = {
               :priority => @priority,
               :url => $~[1].to_s,
-              :source => $~.to_s,
+              :source => url,
               :icon => "fa fa-vine",
               :rule => "vine"
             }
@@ -28,7 +28,7 @@ class VineFinder < UrlFinder
         }
         
       rescue Exception => e
-        stderr.puts "VINE MATCH FAILED #{url}"
+        $stderr.puts "VINE MATCH FAILED #{url}"
       end
     end
     return images
