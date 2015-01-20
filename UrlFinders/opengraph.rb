@@ -15,7 +15,7 @@ class OGFinder < UrlFinder
 
           contents = f.read
           # find the og:image data
-          og_image_match = contents =~ /property="og:image" content="(.*?)"/
+          og_image_match = contents =~ /property="og:image" content="(.*?)"/i
           if og_image_match then
             data = {
               :priority => @priority,
@@ -25,13 +25,22 @@ class OGFinder < UrlFinder
               :rule => "opengraph"
             }
             images << data
-          elsif contents =~ /property="twitter:image" content="(.*?)"/
+          elsif contents =~ /property="twitter:image" content="(.*?)"/i
             data = {
               :priority => @priority,
               :url => $~[1].to_s,
               :source => url,
               :icon => "fa fa-binoculars",
               :rule => "twitter card"
+            }
+            images << data
+          elsif contents =~ /rel="image_src" href="(.*?)"/i
+            data = {
+              :priority => @priority,
+              :url => $~[1].to_s,
+              :source => url,
+              :icon => "fa fa-binoculars",
+              :rule => "rel image_src"
             }
             images << data
           end
