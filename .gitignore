@@ -3,3 +3,6 @@ conf.yaml
 *.sqlite
 temp_thumb.png
 err.log
+*.tmp
+node_modules/
+

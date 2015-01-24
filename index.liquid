@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 
   <!-- Add jQuery library -->
@@ -12,7 +12,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen" />
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.pack.js?v=2.1.5"></script>
 
-  <meta id="meta" name="viewport" content="width=device-width; initial-scale=0.75" />
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
   <title>/r/gamedev SSS aggregator</title>
   <link rel="stylesheet" type="text/css" href="style.css">
@@ -20,43 +19,88 @@
   <script src="display_last_visit.js"></script>
 </head>
 <body>
-<header>
+
+<header id="hero">
   <h1><a href='{{submission_url}}'>{{submission_title}}</a></h1>
   <p>Generated on {{now}}</p>
-  <p><a href="{{album_url}}">Imgur Full Thumbnail Album</a></p>
+  {% comment %}<p><a href="{{album_url}}">Imgur Full Thumbnail Album</a></p>{% endcomment %}
   <p id='last_time'>You haven't seen these.</p>
 </header>
 
-<div id='explanation'>
-  {{explanation_html}}
-</div>
-
-{% for post in posts %}
-  <div class='tile'>
-    <a href='{{post.cover_url}}' class='ss-link fancybox' style="background-image: url({{post.cover_bg}})">
-      {% if post.cover_url %}
-        <i class="{{post.cover_icon}}"></i>
-      {% endif %}
-    </a>
-    <div class='meta-wrap'>
-      <a href='{{post.url}}' class='reddit'><i class='fa fa-reddit'></i></a>
-      {% for item in post.related %}
-        <a href='{{item.link}}' class='{{item.class}}'><i class='{{item.icon}}'></i></a>
-      {% endfor %}
-      <span class="time">{{post.time_after}} after</span>
+<nav id="nav" class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="http://sss.lemtzas.com">/r/gamedev Screenshot Saturday Viewer</a>
     </div>
-    <div class='title-wrap'>
-      {% if post.title %}
-        <a href='{{post.url}}' class="post_title">{{post.title}}</a>
-      {% elsif post.twitter_link %}
-        <a href='{{post.twitter_link}}'>@{{post.twitter_handle}}</a>
-      {% else %}
-        <a href='{{post.url}}' class='author'>/u/{{post.author}}</a>
-      {% endif %}
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="http://reddit.com/r/gamedev">/r/gamedev</a></li>
+        <li><a href="{{submission_url}}">Thread</a></li>
+        <li><a href="{{album_url}}">All Thumbnails</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="https://github.com/lemtzas/r-gamedev-screenshot-saturday"><i class='fa fa-github'></i></a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Who?<span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="http://twitter.com/lemtzas">Made and Maintained by @Lemtzas</a></li>
+            <!--<li class="divider"></li>
+            <li class="text-center"><strong>Special thanks to:</strong></li>
+            <li><a href="#">Something else here</a></li>-->
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<div id="wrap">
+  <div class="row">
+    <div id='explanation'>
+      {{explanation_html}}
     </div>
   </div>
-{% endfor %}
+  <div id="thumbs">
+    {% for post in posts %}
+      <div class='tile'>
+        <div class="tile-content">
+          <a href='{{post.cover_url}}' class='ss-link fancybox' style="background-image: url({{post.cover_bg}})">
+            {% if post.cover_url %}
+              <i class="{{post.cover_icon}}"></i>
+            {% endif %}
+          </a>
+          <div class='meta-wrap'>
+            <a href='{{post.url}}' class='reddit'><i class='fa fa-reddit'></i></a>
+            {% for item in post.related %}
+              <a href='{{item.link}}' class='{{item.class}}'><i class='{{item.icon}}'></i></a>
+            {% endfor %}
+            <span class="time">{{post.time_after}} after</span>
+          </div>
+          <div class='title-wrap'>
+            {% if post.title %}
+              <a href='{{post.url}}' class="post_title">{{post.title}}</a>
+            {% elsif post.twitter_link %}
+              <a href='{{post.twitter_link}}'>@{{post.twitter_handle}}</a>
+            {% else %}
+              <a href='{{post.url}}' class='author'>/u/{{post.author}}</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
 
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 <script>
   if(docCookies.hasItem("{{fullname}}_after")) {
     document.getElementById("last_time").innerHTML = docCookies.getItem("{{fullname}}_after");

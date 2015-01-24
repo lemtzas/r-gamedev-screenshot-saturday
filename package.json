@@ -1,0 +1,24 @@
+{
+  "name": "sss-web-generator",
+  "version": "0.0.0",
+  "description": "",
+  "main": "Gruntfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/lemtzas/r-gamedev-screenshot-saturday.git"
+  },
+  "author": "",
+  "license": "Unspecified",
+  "bugs": {
+    "url": "https://github.com/lemtzas/r-gamedev-screenshot-saturday/issues"
+  },
+  "devDependencies": {
+  "grunt": "~0.4.5",
+  "grunt-contrib-less": "~0.11.0",
+  "grunt-contrib-watch": "~0.6.1",
+  "jit-grunt": "~0.7.0"
+  }
+}

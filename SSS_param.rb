@@ -185,7 +185,7 @@ if submission then
 
   if $options[:watch] then
     puts "watching #{$options[:input]} and PageRenderer.rb for changes"
-    FileWatcher.new([$options[:input],"PageRenderer.rb"]).watch do |filename|
+    FileWatcher.new([$options[:input],"explanation.md", "PageRenderer.rb"]).watch do |filename|
       begin
         puts "updating site layout #{Time.now.to_s}"
         load "PageRenderer.rb"

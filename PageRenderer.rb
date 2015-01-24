@@ -3,6 +3,7 @@ require 'open-uri'
 require 'htmlentities'
 require 'liquid'
 require 'liquidFilters.rb'
+require 'less'
 
 $HTMLEntities = HTMLEntities.new()
 
