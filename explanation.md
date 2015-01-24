@@ -1,4 +1,4 @@
-An aggregator and Viewier for [/r/gamedev](http://www.reddit.com/r/gamedev/)'s Screenshot Saturday. Updates every ~5 minutes with new screenshots from [the latest Screenshot Saturday](http://www.reddit.com/r/gamedev/search?q=flair:SSS&restrict_sr=on&sort=new&t=all).
+An aggregator and viewer for [/r/gamedev](http://www.reddit.com/r/gamedev/)'s Screenshot Saturday. Updates every ~5 minutes with new screenshots from [the latest Screenshot Saturday](http://www.reddit.com/r/gamedev/search?q=flair:SSS&restrict_sr=on&sort=new&t=all).
 
 <div id="key" class="dropdown">
   <button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
