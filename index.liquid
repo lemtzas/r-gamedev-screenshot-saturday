@@ -101,14 +101,6 @@
     {% endfor %}
   </div>
 </div>
-
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-<script>
-  if(docCookies.hasItem("{{fullname}}_after")) {
-    document.getElementById("last_time").innerHTML = docCookies.getItem("{{fullname}}_after");
-  }
-  docCookies.setItem("{{fullname}}_after","You were last here {{last_time_after_text}} after the post.", {{last_time_expiry}})
-</script>
 <!--<script type="text/javascript">
   $(document).ready(function() {
     $(".fancybox").fancybox({
@@ -130,4 +122,13 @@
   });
 </script>-->
 </body>
+
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+<script>
+  if(docCookies.hasItem("{{fullname}}_after")) {
+    document.getElementById("last_time").innerHTML = docCookies.getItem("{{fullname}}_after");
+  }
+  docCookies.setItem("{{fullname}}_after","You were last here {{last_time_after_text}} after the post.", {{last_time_expiry}})
+</script>
 </html>
