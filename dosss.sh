@@ -1,5 +1,13 @@
 #! /bin/bash
 
+if [[  $(sqlite3 cache.sqlite 'pragma integrity_check') == ok  ]]
+then
+  cp cache.sqlite cache.backup.sqlite
+  echo "DB SAFE, BACKING UP"
+else
+  echo "DB CORRUPTED, RESTORING FROM BACKUP"
+  cp cache.backup.sqlite cache.sqlite
+fi
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pwd
 cd $DIR
