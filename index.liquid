@@ -27,6 +27,27 @@
   <p>Generated on {{now}}</p>
   {% comment %}<p><a href="{{album_url}}">Imgur Full Thumbnail Album</a></p>{% endcomment %}
   <p id='last_time'>You haven't seen these.</p>
+  {% comment %}<div id="twitch-stream-wrap">
+    <div id='twitch-stream'>
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+      <object class='contents'
+              type="application/x-shockwave-flash"
+              id="live_embed_player_flash"
+              data="http://www.twitch.tv/widgets/live_embed_player.swf?channel=cdnthe3rd" 
+              bgcolor="#000000">
+        <param  name="allowFullScreen" 
+                value="true" />
+        <param  name="allowScriptAccess" 
+                value="always" />
+        <param  name="allowNetworking" 
+                value="all" />
+        <param  name="movie" 
+                value="http://www.twitch.tv/widgets/live_embed_player.swf" />
+        <param  name="flashvars" 
+                value="hostname=www.twitch.tv&channel=cdnthe3rd&auto_play=true" />
+      </object>
+    </div>
+  </div>{% endcomment %}
 </header>
 
 <nav id="nav" class="navbar navbar-default">
@@ -39,7 +60,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="http://sss.lemtzas.com">/r/gamedev Screenshot Saturday Viewer</a>
+      <a class="navbar-brand" href="http://sss.lemtzas.com">/r/gamedev SSS Viewer</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -75,7 +96,7 @@
     {% for post in posts %}
       <div class='tile'>
         <div class="tile-content">
-          <a href='{{post.cover_url}}' class='ss-link fancybox' style="background-image: url({{post.cover_bg}})">
+          <a {% comment %}href='{{post.cover_url}}'{% endcomment %} class='ss-link fancybox' href="#{{post.fullname}}"style="background-image: url({{post.cover_bg}})">
             {% if post.cover_url %}
               <i class="{{post.cover_icon}}"></i>
             {% endif %}
@@ -96,6 +117,7 @@
               <a href='{{post.url}}' class='author'>/u/{{post.author}}</a>
             {% endif %}
           </div>
+          <div class="body-wrap" id="{{post.fullname}}">{{post.html}}</div>
         </div>
       </div>
     {% endfor %}
@@ -123,12 +145,40 @@
 </script>-->
 </body>
 
-
+<!--Last Seen Script-->
 <script>
   if(docCookies.hasItem("{{fullname}}_after")) {
     document.getElementById("last_time").innerHTML = docCookies.getItem("{{fullname}}_after");
   }
   docCookies.setItem("{{fullname}}_after","You were last here {{last_time_after_text}} after the post.", {{last_time_expiry}})
 </script>
+
+<script>
+var channel = 'cdnthe3rd';
+function twitch(data) {
+   $('#twitch-stream').removeClass('hidden');
+}
+</script>
+<script src="http://api.twitch.tv/kraken/streams/cdnthe3rd?callback=twitch"></script>
+
+<script>
+  $(document).ready(function () {
+    $(".fancybox").fancybox({
+        maxWidth: '800px',
+        // height: '10%',
+        // fitToView: false,
+        autoSize: true,
+        closeClick: false,
+        openEffect: 'none',
+        closeEffect: 'none',
+        beforeShow: function () {
+            //TODO: only play the video we just opened?
+            //$("video").get(0).play();
+            //TODO: stop videos after we close them?
+        }
+    });
+  });
+</script>
+
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 </html>

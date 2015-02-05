@@ -39,15 +39,18 @@ class PageRenderer
       puts e.message
       puts e.backtrace.join("\n")
     end
-  end
+  end 
 
   def prepare_liquid_variables(liquid_data)
     liquid_data = liquid_data.deep_stringify_keys
     # puts liquid_data['posts'][0].to_yaml
-    liquid_data["posts"].select{|i| i["author"] and i["author"].include?("Dawnfall")}.each do |i|
+    liquid_data["posts"].select{|i| i["author"] and i["author"].include?("midge")}.each do |i|
       puts "--------------------------------------------------------------------------------------"
       puts "--------------------------------------------------------------------------------------"
-      puts i.to_yaml
+      puts i["author"] + "  -  " + i["fullname"]
+    end
+    liquid_data["posts"].select{|i| i["author"] and i["author"].include?("leet72")}.each do |i|
+      puts i["author"] + "  -  " + i["fullname"]
     end
     return liquid_data
   end

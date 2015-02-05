@@ -1,0 +1,72 @@
+// http://alistapart.com/article/creating-intrinsic-ratios-for-video
+#twitch-stream-wrap {
+
+  #twitch-stream {
+    position: relative;
+    display: inline-block; /* shrink wrap */
+    height: 400px; /* arbitrary input height; adjust this */
+    background-color: red;
+
+    img {
+      height: 164%;
+    }
+    object {
+      height: 100%;
+      width: 100%;
+    }
+
+    .contents {
+      /* match size of .container, without influencing it */
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+  }
+}
+
+// #twitch-stream-wrap{
+//   width: 100%;
+  
+//   @media (min-width: @screen-sm-min) {
+//     .container;
+//   }
+//   #twitch-stream {
+//     width: percentage((12 / @grid-columns));
+//     margin: 0 auto;
+//     width: 620px;
+//     height: auto;
+//     max-width: 100%;
+//     max-height: 60%; 
+//     // padding-bottom: percentage((12 / @grid-columns)*.61);
+//     // position: relative;
+
+//     background-color: red;
+    
+//     @media (min-width: @screen-sm-min) {
+//       @twitch-width: @screen-sm-min*8/12;
+//       width: percentage((8 / @grid-columns));
+//       padding-bottom: percentage((8 / @grid-columns)*.61);
+//     }
+    
+//     @media (min-width: @screen-md-min) {
+//       width: percentage((6 / @grid-columns));
+//       padding-bottom: percentage((6 / @grid-columns)*.61);
+//     }
+
+//     @media (min-width: @screen-lg-min) {
+//       width: percentage((6 / @grid-columns));
+//       padding-bottom: percentage((6 / @grid-columns)*.61);
+//     }
+//     object {
+//       // position: absolute;
+//       // top: 0; bottom: 0; left: 0; right: 0;
+//       width: 100%;
+//       height: 100%;
+
+//       max-width: 620px;
+//       max-height: 368px;
+//     }
+//   }
+// }
