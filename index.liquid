@@ -24,9 +24,8 @@
 
 <header id="hero">
   <h1><a href='{{submission_url}}'>{{submission_title}}</a></h1>
-  <p>Generated on {{now}}</p>
   {% comment %}<p><a href="{{album_url}}">Imgur Full Thumbnail Album</a></p>{% endcomment %}
-  <p id='last_time'>You haven't seen these.</p>
+  
   {% comment %}<div id="twitch-stream-wrap">
     <div id='twitch-stream'>
       <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
@@ -85,6 +84,11 @@
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
+
+<div id="gen-info">
+  <div id="generated">Generated <i class="fa fa-clock-o time"><span>{{now}}</span></i></div>
+  <div id="seen">Last visit: <i class="fa fa-clock-o time"><span id='last_time'>You haven't seen these.</span></i></div>
+</div>
 
 <div id="wrap">
   <div class="row">
@@ -161,9 +165,9 @@
 <!--Last Seen Script-->
 <script>
   if(docCookies.hasItem("{{fullname}}_after")) {
-    document.getElementById("last_time").innerHTML = docCookies.getItem("{{fullname}}_after");
+    document.getElementById("last_time").innerHTML = docCookies.getItem("{{fullname}}_after") + " after the post.";
   }
-  docCookies.setItem("{{fullname}}_after","You were last here {{last_time_after_text}} after the post.", {{last_time_expiry}})
+  docCookies.setItem("{{fullname}}_after","{{last_time_after_text}}", {{last_time_expiry}})
 </script>
 
 <script>
