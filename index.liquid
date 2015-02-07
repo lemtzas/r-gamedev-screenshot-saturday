@@ -97,19 +97,25 @@
       <div class='tile'>
         <div class="tile-content">
           <a {% comment %}href='{{post.cover_url}}'{% endcomment %} class='ss-link fancybox' href="#{{post.fullname}}"style="background-image: url({{post.cover_bg}})">
-            {% for image in post.images %}
+            {% comment %}{% for image in post.images %}
               {% unless image.icon == blank %}
                 <i class="{{image.icon}}"></i>
               {% else %}
                 <i class="fa fa-image"></i>
               {% endunless %}
-            {% endfor %}
+            {% endfor %}{% endcomment %}
           </a>
           <div class='meta-wrap'>
             <a href='{{post.url}}' class='reddit'><i class='fa fa-reddit'></i></a>
-            {% for item in post.related %}
-              <a href='{{item.link}}' class='{{item.class}}'><i class='{{item.icon}}'></i></a>
+            {% for item in post.related %}<a href='{{item.link}}' class='{{item.class}}'><i class='{{item.icon}}'></i></a>{% endfor %}
+            
+
+            {% for icon in post.icons %}
+              {% comment %}<div class="icon">{% endcomment %}
+                <i class="image {{icon.icon}}"></i>
+              {% comment %}</div>{% endcomment %}
             {% endfor %}
+
             <span class="time">{{post.time_after}} after</span>
           </div>
           <div class='title-wrap'>

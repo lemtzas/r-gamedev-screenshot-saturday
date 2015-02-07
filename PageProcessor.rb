@@ -56,6 +56,7 @@ class PageProcessor
     @page_scanners << TitleScanner.new()
     @page_scanners << CoverPicker.new()
     @page_scanners << TimeAfterScanner.new()
+    @page_scanners << IconConsolidator.new()
   end
 
   def process(submission)
