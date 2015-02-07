@@ -171,6 +171,12 @@ function twitch(data) {
         closeClick: false,
         openEffect: 'none',
         closeEffect: 'none',
+        scrolling   : 'hidden',
+        helpers: {
+           overlay: {
+              locked: true 
+           }
+        },
         beforeShow: function () {
             //TODO: only play the video we just opened?
             //$("video").get(0).play();
