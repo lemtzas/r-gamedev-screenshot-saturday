@@ -11,5 +11,6 @@ An aggregator and viewer for [/r/gamedev](http://www.reddit.com/r/gamedev/)'s Sc
     <li class="dropdown"><i class="fa fa-youtube-play" title=""></i> Youtube</li>
     <li class="dropdown"><i class="fa fa-vine" title=""></i> Vine </li>
     <li class="dropdown"><i class="fa fa-binoculars" title=""></i>Non-image link</li>
+    <li class="dropdown"><i class="fa fa-clock-o" title=""></i>Time after SSS began</li>
   </ul>
 </div>

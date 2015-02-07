@@ -109,14 +109,17 @@
             <a href='{{post.url}}' class='reddit'><i class='fa fa-reddit'></i></a>
             {% for item in post.related %}<a href='{{item.link}}' class='{{item.class}}'><i class='{{item.icon}}'></i></a>{% endfor %}
             
+            <span class="images">
+              (
+              {% for icon in post.icons %}
+                {% comment %}<div class="icon">{% endcomment %}
+                  <i class="image {{icon.icon}}"></i>
+                {% comment %}</div>{% endcomment %}
+              {% endfor %}
+              )
+            </span>
 
-            {% for icon in post.icons %}
-              {% comment %}<div class="icon">{% endcomment %}
-                <i class="image {{icon.icon}}"></i>
-              {% comment %}</div>{% endcomment %}
-            {% endfor %}
-
-            <span class="time">{{post.time_after}} after</span>
+            <i class="fa fa-clock-o time"><span>{{post.time_after}}</span></i>
           </div>
           <div class='title-wrap'>
             {% if post.title %}
