@@ -97,9 +97,13 @@
       <div class='tile'>
         <div class="tile-content">
           <a {% comment %}href='{{post.cover_url}}'{% endcomment %} class='ss-link fancybox' href="#{{post.fullname}}"style="background-image: url({{post.cover_bg}})">
-            {% if post.cover_url %}
-              <i class="{{post.cover_icon}}"></i>
-            {% endif %}
+            {% for image in post.images %}
+              {% unless image.icon == blank %}
+                <i class="fa fa-image"></i>
+              {% else %}
+                <i class="{{image.icon}}"></i>
+              {% endunless %}
+            {% endfor %}
           </a>
           <div class='meta-wrap'>
             <a href='{{post.url}}' class='reddit'><i class='fa fa-reddit'></i></a>
