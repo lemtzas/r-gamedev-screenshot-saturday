@@ -4,8 +4,6 @@
 #   ex: http://i.imgur.com/cQzi1m.jpg
 # http://miners.github.io/MinusAPIv2/v2/objects.html
 
-Encoding.default_external = Encoding::UTF_8
-
 $LOAD_PATH << '.'
 $LOAD_PATH << File.expand_path(File.dirname(__FILE__))
 

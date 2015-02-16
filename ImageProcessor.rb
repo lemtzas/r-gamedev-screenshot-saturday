@@ -81,6 +81,9 @@ class ImageProcessor
       results.each do |result|
         # the position and priority is needed for sorting information, so copy/default them
         # result[:position] = position
+        if result[0] == "none" then
+          result = {}
+        end
             result[:index] = augment[:index]
         result[:priority] = result[:priority] or 10
         result[:position] = augment[:position]
@@ -128,7 +131,7 @@ class ImageProcessor
     url_augments.each { |augment| 
       if augment[:data].empty? then
         # do a quick cache of the results in case anything bad happens
-        @cacheFinder.store(augment[:url], {:none => true})
+        @cacheFinder.store(augment[:url], [])
       end
     }
 
