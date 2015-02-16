@@ -182,7 +182,7 @@ def process(w)
     pp = PageProcessor.new($redd, $db, $imgur)
     packed_data = pp.process(submission)
 
-    PageRenderer.new().render(packed_data, w["input"], w["output"])
+    PageRenderer.new().render(packed_data, w["input"], w["output"], w["explanation"])
 
     if w["watch"] then
       puts "watching #{w["input"]} and PageRenderer.rb for changes"

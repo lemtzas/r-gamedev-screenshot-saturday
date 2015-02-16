@@ -24,14 +24,14 @@ class PageRenderer
 
       puts "Reading explanation file #{explanation_location}."
       explanation_file = File.open(explanation_location, "r")
-      explanation_text = explanation_file.read.force_encoding('utf-8')
+      explanation_text = explanation_file.read
       explanation_file.close()
       html = Kramdown::Document.new(explanation_text).to_html
       liquid_data["explanation_html"] = html
 
       puts "Writing HTML output to #{to_where}"
       # write the output
-      File.open( to_where,"wls -" ) { |html|
+      File.open( to_where,"w" ) { |html|
         html << @template.render(liquid_data)
       }
     rescue Exception => e
