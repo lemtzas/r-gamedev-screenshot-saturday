@@ -124,6 +124,14 @@ class ImageProcessor
       }
     end
 
+    # cache failures as well
+    url_augments.each { |augment| 
+      if augment[:data].empty? then
+        # do a quick cache of the results in case anything bad happens
+        @cacheFinder.store(augment[:url], augment[:data])
+      end
+    }
+
     # process images into final array, grab thumbnails if we can, and cache results
     url_augments.each { |augment|
       augment[:data].each do |data|
