@@ -24,7 +24,7 @@ class PageRenderer
 
       puts "Reading explanation file."
       explanation_file = File.open(explanation_location, "rb")
-      explanation_text = explanation_file.read
+      explanation_text = explanation_file.read.force_encoding('utf-8')
       explanation_file.close()
       html = Kramdown::Document.new(explanation_text).to_html
       liquid_data["explanation_html"] = html
