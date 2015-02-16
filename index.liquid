@@ -135,7 +135,34 @@
               <a href='{{post.url}}' class='author'>/u/{{post.author}}</a>
             {% endif %}
           </div>
-          <div class="body-wrap" id="{{post.fullname}}">{{post.html}}</div>
+          <div class="body-wrap" id="{{post.fullname}}">
+
+            <div class='meta-top-wrap'>
+              <a href='{{post.url}}' class='reddit'>view on reddit <i class='fa fa-reddit'></i></a>
+              {% if post.related.size > 0 %}
+                <span class="related">
+                  related:
+                  {% for item in post.related %}<a href='{{item.link}}' class='{{item.class}}'><i class='{{item.icon}}'></i></a>{% endfor %}
+                </span>
+              {% endif %}
+              
+              {% if post.icons.size > 0 %}
+                <span class="images">
+                  images:
+                  (
+                  {% for icon in post.icons %}
+                    {% comment %}<div class="icon">{% endcomment %}
+                      <i class="image {{icon.icon}}"></i>
+                    {% comment %}</div>{% endcomment %}
+                  {% endfor %}
+                  )
+                </span>
+              {% endif %}
+
+              <i class="fa fa-clock-o time"><span>{{post.time_after}}</span></i>
+            </div>
+            {{post.html}}
+          </div>
         </div>
       </div>
     {% endfor %}

@@ -184,13 +184,13 @@ def process(w)
 
     PageRenderer.new().render(packed_data, w["input"], w["output"])
 
-    if w[:watch] then
+    if w["watch"] then
       puts "watching #{w["input"]} and PageRenderer.rb for changes"
-      FileWatcher.new([w["input"],"explanation.md", "PageRenderer.rb"]).watch do |filename|
+      FileWatcher.new([w["input"],w["explanation"], "PageRenderer.rb"]).watch do |filename|
         begin
           puts "updating site layout #{Time.now.to_s}"
           load "PageRenderer.rb"
-          PageRenderer.new().render(packed_data, w["input"], w["output"])
+          PageRenderer.new().render(packed_data, w["input"], w["output"], w["explanation"])
         rescue => e
           puts e
         end

@@ -116,7 +116,57 @@
       padding: 10px;
   }
 
-  .body-wrap {
-    display: none;
-  }
+
 }
+
+.body-wrap {
+    display: none;
+
+    .md {
+      display: block;
+      clear: both;
+      padding-top: 2rem;
+    }
+
+    .meta-top-wrap {
+      height: 20px;
+      display: block-inline;
+      margin-bottom: 1rem;
+      font-size: 2rem;
+      margin-left: 0.5rem;
+      margin-right: 0.5rem;
+
+      .images {
+        margin-left: 10px;
+        color: lighten(@gray-base,75%);
+      }
+
+      i.time span {
+        font-family: @font-family-base;
+        margin-left: 2px;
+      }
+
+
+
+      .time {
+        float: right;
+        display: block-inline;
+      }
+
+      .reddit {
+        color: lighten(@gray-base,75%) !important;
+        .fa {
+          color: black;
+        }
+      }
+
+      .related {
+        font-family: @font-family-base;
+        margin-left: 10px;
+        color: lighten(@gray-base,75%) !important;
+        a {
+          color: black;
+        }
+      }
+    }
+  }

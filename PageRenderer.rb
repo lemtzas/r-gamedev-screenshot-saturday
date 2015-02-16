@@ -12,7 +12,7 @@ class PageRenderer
      
   end
 
-  def render(liquid_data, template='index.liquid', to_where='index.html')
+  def render(liquid_data, template='index.liquid', to_where='index.html', explanation_location)
     begin
       liquid_data = prepare_liquid_variables(liquid_data)
 
@@ -23,7 +23,7 @@ class PageRenderer
       }
 
       puts "Reading explanation file."
-      explanation_file = File.open("explanation.md", "rb")
+      explanation_file = File.open(explanation_location, "rb")
       explanation_text = explanation_file.read
       explanation_file.close()
       html = Kramdown::Document.new(explanation_text).to_html
