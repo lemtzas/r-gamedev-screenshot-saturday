@@ -13,4 +13,4 @@ An aggregator and viewer for [/r/gamedev](http://www.reddit.com/r/gamedev/)'s Qu
     <li class="dropdown"><i class="fa fa-binoculars" title=""></i>Non-image link</li>
     <li class="dropdown"><i class="fa fa-clock-o" title=""></i> Time after SSS began</li>
   </ul>
-</div>
+</div> 
