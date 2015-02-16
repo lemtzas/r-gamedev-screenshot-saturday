@@ -99,7 +99,7 @@ class ImageProcessor
       #   url_finder.scan(packed_data[:body_decoded])
       # end
       url_augments.each { |augment|
-        if augment[:data].empty? then
+        if result[:position].empty? then
           url = augment[:url]
           puts "pass '#{url.to_s}' to #{url_finder.class.name}"
           results = url_finder.handle(url)
@@ -128,7 +128,7 @@ class ImageProcessor
     url_augments.each { |augment| 
       if augment[:data].empty? then
         # do a quick cache of the results in case anything bad happens
-        @cacheFinder.store(augment[:url], augment[:data])
+        @cacheFinder.store(augment[:url], {:none => true})
       end
     }
 
