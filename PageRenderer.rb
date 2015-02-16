@@ -22,7 +22,7 @@ class PageRenderer
         @template = Liquid::Template.parse(f.read)
       }
 
-      puts "Reading explanation file."
+      puts "Reading explanation file #{explanation_location}."
       explanation_file = File.open(explanation_location, "r")
       explanation_text = explanation_file.read.force_encoding('utf-8')
       explanation_file.close()
