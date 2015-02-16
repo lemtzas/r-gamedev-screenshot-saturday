@@ -31,41 +31,41 @@ Dir[File.dirname(__FILE__) + '/PostScanners/*.rb'].each {|file| require file }
 if File.exist?('conf.yaml') then
   $options = YAML.load_file('conf.yaml')
 
-  $options[:username] ||= "USERNAME HERE"
-  $options[:password] ||= "PASSWORD HERE"
-  $options[:useragent] ||= "/r/gamedev Parameterized Aggregator v0.1 by /u/lemtzas"
-  $options[:subreddit] ||= "gamedev"
-  $options[:query] ||= "flair:SSS"
-  $options[:output] ||= "index.html"
-  $options[:input] ||= "index.liquid"
-  $options[:imgur_key] ||= "KEY HERE"
-  $options[:sqlite_location] ||= "cache.sqlite"
+  $options["username"] ||= "USERNAME HERE"
+  $options["password"] ||= "PASSWORD HERE"
+  $options["useragent"] ||= "/r/gamedev Parameterized Aggregator v0.1 by /u/lemtzas"
+  $options["subreddit"] ||= "gamedev"
+  $options["query"] ||= "flair:SSS"
+  $options["output"] ||= "index.html"
+  $options["input"] ||= "index.liquid"
+  $options["imgur_key"] ||= "KEY HERE"
+  $options["sqlite_location"] ||= "cache.sqlite"
 
   File.open("conf.yaml",'w') {|f| f.write(YAML.dump($options))}
 else
   $options = {}
 
-  $options[:username] ||= "USERNAME HERE"
-  $options[:password] ||= "PASSWORD HERE"
-  $options[:useragent] ||= "/r/gamedev Parameterized Aggregator v0.1 by /u/lemtzas"
-  $options[:subreddit] ||= "gamedev"
-  $options[:query] ||= "flair:SSS"
-  $options[:output] ||= "index.html"
-  $options[:input] ||= "index.liquid"
-  $options[:imgur_key] ||= "KEY HERE"
-  $options[:sqlite_location] ||= "cache.sqlite"
+  $options["username"] ||= "USERNAME HERE"
+  $options["password"] ||= "PASSWORD HERE"
+  $options["useragent"] ||= "/r/gamedev Parameterized Aggregator v0.1 by /u/lemtzas"
+  $options["subreddit"] ||= "gamedev"
+  $options["query"] ||= "flair:SSS"
+  $options["output"] ||= "index.html"
+  $options["input"] ||= "index.liquid"
+  $options["imgur_key"] ||= "KEY HERE"
+  $options["sqlite_location"] ||= "cache.sqlite"
 
   File.open("conf.yaml",'w') {|f| f.write(YAML.dump($options))}
 end
 OptionParser.new do |opts|
   opts.banner = "Usage: example.rb [options]"
-  opts.on('-s', '--subreddit SUBREDDIT', 'Subreddit to search (defautls to "gamedev")') { |v| $options[:query] = v }
-  opts.on('-q', '--query TEXT', 'Search Query; investigates first post (defautls to "flair:SSS")') { |v| $options[:query] = v }
+  opts.on('-s', '--subreddit SUBREDDIT', 'Subreddit to search (defautls to "gamedev")') { |v| $options["query"] = v }
+  opts.on('-q', '--query TEXT', 'Search Query; investigates first post (defautls to "flair:SSS")') { |v| $options["query"] = v }
   opts.on('-p', '--id POST_ID', 'Post ID to investigate; overrides Query') { |v| $options[:post_id] = v }
-  opts.on('-o', '--output FILE', 'Output File name (defaults to index.html)') { |v| $options[:output] = v }
-  opts.on('-i', '--input LIQUID', 'Input Liquid Styling (defaults to index.liquid)') { |v| $options[:input] = v }
-  opts.on('-c', '--credentials USERNAME PASSWORD', 'Authentication Credentials for reddit (defaults to username/password keys in conf.yaml)') { |v,w| $options[:username] = v; $options[:password] = w }
-  opts.on('-k', '--imgur_key KEY', 'Authentication key for imgur (defaults to imgur_key in conf.yaml)') { |v| $options[:imgur_key] = v}
+  opts.on('-o', '--output FILE', 'Output File name (defaults to index.html)') { |v| $options["output"] = v }
+  opts.on('-i', '--input LIQUID', 'Input Liquid Styling (defaults to index.liquid)') { |v| $options["input"] = v }
+  opts.on('-c', '--credentials USERNAME PASSWORD', 'Authentication Credentials for reddit (defaults to username/password keys in conf.yaml)') { |v,w| $options["username"] = v; $options["password"] = w }
+  opts.on('-k', '--imgur_key KEY', 'Authentication key for imgur (defaults to imgur_key in conf.yaml)') { |v| $options["imgur_key"] = v}
   opts.on('-w', '--watch', 'Watch for changes in liquid/webify') { $options[:watch] = true }
   opts.on('-f', '--false', 'False start; just do the prep.') { $HAMMERTIME = true }
   opts.on_tail("-h", "--help", "Show this message") do
@@ -126,77 +126,86 @@ begin
 end
 
 # create $redd client as authed or unauthed depending on if credentials were provided
-if $options[:username] != "USERNAME HERE" and $options[:password] != "PASSWORD HERE" then
+if $options["username"] != "USERNAME HERE" and $options["password"] != "PASSWORD HERE" then
   $redd = Redd::Client::Authenticated.new_from_credentials(
-        $options[:username], $options[:password],
-        user_agent: $options[:useragent])
+        $options["username"], $options["password"],
+        user_agent: $options["useragent"])
 else
-  $redd = Redd::Client::Unauthenticated.new(user_agent: $options[:useragent])
+  $redd = Redd::Client::Unauthenticated.new(user_agent: $options["useragent"])
 end
 
 # set up imgur
-$imgur = Imgur.new($options[:imgur_key])
+$imgur = Imgur.new($options["imgur_key"])
 credits = $imgur.credits()
 puts "#{credits.to_s}"
 puts "IMGUR CREDITS REMAINING: #{credits["UserRemaining"].to_s}"
 puts "RESET DATE: #{Time.at(credits["UserReset"]).to_datetime.to_s}"
 
-$db = SQLite3::Database.new($options[:sqlite_location])
+$db = SQLite3::Database.new($options["sqlite_location"])
 $db.results_as_hash = true
 
 # load the interpreters
 $url_finders = []
 $post_scanners = []
 
-submission = nil
+def process(w)
+  submission = nil
 
-# find the submission
-$subreddit = $redd.subreddit($options[:subreddit])
-if $options[:post_id] then
-  $options[:post_fullname] = "t3_#{$options[:post_id]}"
-  puts "getting results for #{$options[:post_fullname]}"
-  $submission = $redd.by_id($options[:post_fullname])[0]
-  puts "submission title: #{$submission.title}"
-else
-  puts "checking first result for query: #{$options[:query]}"
+  # find the submission
+  $subreddit = $redd.subreddit(w["subreddit"])
+  if w[:post_id] then
+    w[:post_fullname] = "t3_#{w[:post_id]}"
+    puts "getting results for #{w[:post_fullname]}"
+    $submission = $redd.by_id(w[:post_fullname])[0]
+    puts "submission title: #{$submission.title}"
+  else
+    puts "checking first result for query: #{w["query"]}"
 
-  submissions = $subreddit.search($options[:query],
-               {:limit => 1,
-                :restrict_sr => true,
-                :sort => "new",
-                :t => "all" })
+    submissions = $subreddit.search(w["query"],
+                 {:limit => 1,
+                  :restrict_sr => true,
+                  :sort => "new",
+                  :t => "all" })
 
-  submission = submissions[0]
-end
-
-$verbose = true
-
-# process the submission
-if submission then
-  puts "found '#{submission.title}' by /u/#{submission.author}"
-
-  if $HAMMERTIME then
-    exit
+    submission = submissions[0]
   end
-  pp = PageProcessor.new($redd, $db, $imgur)
-  packed_data = pp.process(submission)
 
-  PageRenderer.new().render(packed_data, $options[:input], $options[:output])
+  $verbose = true
 
-  if $options[:watch] then
-    puts "watching #{$options[:input]} and PageRenderer.rb for changes"
-    FileWatcher.new([$options[:input],"explanation.md", "PageRenderer.rb"]).watch do |filename|
-      begin
-        puts "updating site layout #{Time.now.to_s}"
-        load "PageRenderer.rb"
-        PageRenderer.new().render(packed_data, $options[:input], $options[:output])
-      rescue => e
-        puts e
+  # process the submission
+  if submission then
+    puts "found '#{submission.title}' by /u/#{submission.author}"
+
+    if $HAMMERTIME then
+      exit
+    end
+    pp = PageProcessor.new($redd, $db, $imgur)
+    packed_data = pp.process(submission)
+
+    PageRenderer.new().render(packed_data, w["input"], w["output"])
+
+    if w[:watch] then
+      puts "watching #{w["input"]} and PageRenderer.rb for changes"
+      FileWatcher.new([w["input"],"explanation.md", "PageRenderer.rb"]).watch do |filename|
+        begin
+          puts "updating site layout #{Time.now.to_s}"
+          load "PageRenderer.rb"
+          PageRenderer.new().render(packed_data, w["input"], w["output"])
+        rescue => e
+          puts e
+        end
       end
     end
   end
 end
 
+# process($options)
+
+
+$options["pages"].each do |item|
+  puts item.inspect
+  process(item)
+end
 
 
 
@@ -212,11 +221,11 @@ end
 
 # # dump the results to .html
 # SSSDump.stat_dump(results[:posts])
-# SSSWebify.webify($submission, results[:posts], $options[:output], $options[:input])
+# SSSWebify.webify($submission, results[:posts], $options["output"], $options["input"])
 
 # if $options[:watch] then
-#   puts "watching #{$options[:input]} and SSS_webify.rb for changes"
-#   FileWatcher.new([$options[:input],"SSS_webify.rb"]).watch do |filename|
+#   puts "watching #{$options["input"]} and SSS_webify.rb for changes"
+#   FileWatcher.new([$options["input"],"SSS_webify.rb"]).watch do |filename|
 #     begin
 #       puts "updating site layout #{Time.now.to_s}"
 #       load "SSS_webify.rb"
