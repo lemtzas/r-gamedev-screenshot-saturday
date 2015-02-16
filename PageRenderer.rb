@@ -6,6 +6,7 @@ require 'liquidFilters.rb'
 require 'less'
 
 $HTMLEntities = HTMLEntities.new()
+Encoding.default_external = Encoding::UTF_8
 
 class PageRenderer
   def initialize()
