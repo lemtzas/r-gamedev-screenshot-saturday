@@ -81,9 +81,6 @@ class ImageProcessor
       results.each do |result|
         # the position and priority is needed for sorting information, so copy/default them
         # result[:position] = position
-        if result[0] == "none" then
-          result = {}
-        end
             result[:index] = augment[:index]
         result[:priority] = result[:priority] or 10
         result[:position] = augment[:position]
@@ -102,7 +99,7 @@ class ImageProcessor
       #   url_finder.scan(packed_data[:body_decoded])
       # end
       url_augments.each { |augment|
-        if not augment[:position] then
+        if augment[:data].empty? then
           url = augment[:url]
           puts "pass '#{url.to_s}' to #{url_finder.class.name}"
           results = url_finder.handle(url)
@@ -126,14 +123,6 @@ class ImageProcessor
         # end
       }
     end
-
-    # cache failures as well
-    # url_augments.each { |augment| 
-    #   if augment[:data].empty? then
-    #     # do a quick cache of the results in case anything bad happens
-    #     @cacheFinder.store(augment[:url], [])
-    #   end
-    # }
 
     # process images into final array, grab thumbnails if we can, and cache results
     url_augments.each { |augment|
