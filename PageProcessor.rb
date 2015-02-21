@@ -72,6 +72,7 @@ class PageProcessor
 
     @album.images = []
     packed_posts.each do |data|
+      puts "PROCESSING #{data[:author]} #{data[:url]}"
       data[:images] = @image_processor.process(data)
       data[:images].each do |image|
         image[:thumbnail_id]
