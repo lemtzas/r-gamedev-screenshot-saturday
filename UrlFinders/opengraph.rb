@@ -1,18 +1,20 @@
 require 'timeout'
 require 'andand'
+require 'uri'
 
 class OGFinder < UrlFinder
   EXTENSION_CAPTURE = /([^.]*)$/i
   SCANNED_URLS = %w[dtd html xtm xhtml xht mht mhtml maff asp aspx adp bml cfm cgi ihtml jsp las lasso lassoapp pl php php? phtml rna r rnx shtml stm]
-  
+
   def initialize(priority)
     @priority = priority
   end
 
   def handle(url)
     images = []
-    extension = url.match(EXTENSION_CAPTURE).andand[1]
-    return images unless (extension.empty? || SCANNED_URLS.include? extension)
+    uri = URI(url)
+    extension = uri.path.andand.match(EXTENSION_CAPTURE).andand[1]
+    return images unless (extension.empty? || SCANNED_URLS.include?(extension))
     begin
       # puts "\nopening #{site_url}"
       Timeout::timeout(30) {
