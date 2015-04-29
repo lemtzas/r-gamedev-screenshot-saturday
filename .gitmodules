@@ -1,6 +1,3 @@
-[submodule "redd"]
-	path = redd
-	url = https://github.com/lemtzas/redd
 [submodule "imgur"]
 	path = imgur
 	url = https://github.com/lemtzas/imgur
