@@ -14,3 +14,4 @@ gem 'activesupport'
 gem 'less', '~> 2.6.0'
 gem "therubyracer"
 gem 'andand'
+gem 'minitest'

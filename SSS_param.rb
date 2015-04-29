@@ -30,18 +30,6 @@ Dir[File.dirname(__FILE__) + '/PostScanners/*.rb'].each {|file| require file }
 
 if File.exist?('conf.yaml') then
   $options = YAML.load_file('conf.yaml')
-
-  $options["username"] ||= "USERNAME HERE"
-  $options["password"] ||= "PASSWORD HERE"
-  $options["useragent"] ||= "/r/gamedev Parameterized Aggregator v0.1 by /u/lemtzas"
-  $options["subreddit"] ||= "gamedev"
-  $options["query"] ||= "flair:SSS"
-  $options["output"] ||= "index.html"
-  $options["input"] ||= "index.liquid"
-  $options["imgur_key"] ||= "KEY HERE"
-  $options["sqlite_location"] ||= "cache.sqlite"
-
-  File.open("conf.yaml",'w') {|f| f.write(YAML.dump($options))}
 else
   $options = {}
 

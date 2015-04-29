@@ -1,5 +1,5 @@
 *.html
-conf.yaml
+conf.*
 *.sqlite
 temp_thumb.png
 err.log
