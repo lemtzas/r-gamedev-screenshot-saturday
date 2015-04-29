@@ -6,7 +6,7 @@ require 'andand'
 $HTMLEntities = HTMLEntities.new()
 
 class PageProcessor
-  URL_REGEX = /\[.+\]\((.+)\)|(http:\/\/[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\-\.\_\~\:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=]+)/i
+  URL_REGEX = /\[.+\]\((?<url>.+?)\)|(?<url>https?:\/\/[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\-\.\_\~\:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=]+)/i
   def initialize(redd, db, imgur)
     @redd = redd
     @db = db
@@ -202,6 +202,6 @@ class PageProcessor
 
       urls << $~
     }
-    return urls.to_a.collect{|a| a.andand[1].to_s}
+    return urls.to_a.collect{|a| a.andand['url'].to_s}
   end
 end
