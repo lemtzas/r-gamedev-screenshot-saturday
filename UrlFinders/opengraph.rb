@@ -59,5 +59,7 @@ class OGFinder < UrlFinder
       $stderr.puts "OG MATCH FAILED #{url} #{e.message} \n#{e.backtrace.join("\n")}"
     end
     return images
+  rescue
+    return []
   end
 end
