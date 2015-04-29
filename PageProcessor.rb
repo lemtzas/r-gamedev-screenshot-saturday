@@ -5,7 +5,7 @@ require 'ImageProcessor'
 $HTMLEntities = HTMLEntities.new()
 
 class PageProcessor
-  URL_REGEX = /(?<=\()https?:\/\/[^\s]+(?=\))|(?:https?:\/\/[^\s]+)/i
+  URL_REGEX = /\[.+\]\((.+)\)|(http:\/\/[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\-\.\_\~\:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=]+)/i
   def initialize(redd, db, imgur)
     @redd = redd
     @db = db
