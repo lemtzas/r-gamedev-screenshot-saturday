@@ -1,6 +1,7 @@
 require 'digest/md5'
 require 'sqlite3'
 require 'ImageProcessor'
+require 'andand'
 
 $HTMLEntities = HTMLEntities.new()
 
@@ -199,7 +200,7 @@ class PageProcessor
     text.scan(URL_REGEX) { |url|
       # puts "push '#{url.to_s}' #{$~.begin(0)}"
 
-      urls << $~
+      urls << $~.andand[1]
     }
     return urls.to_a.collect{|a| a[0].to_s}
   end
