@@ -200,8 +200,8 @@ class PageProcessor
     text.scan(URL_REGEX) { |url|
       # puts "push '#{url.to_s}' #{$~.begin(0)}"
 
-      urls << $~.andand[1]
+      urls << $~
     }
-    return urls.to_a.collect{|a| a[0].to_s}
+    return urls.to_a.collect{|a| a.andand[1].to_s}
   end
 end
