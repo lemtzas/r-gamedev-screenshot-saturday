@@ -175,7 +175,7 @@ class PageProcessor
     data[:firstline]      = limit_lines(data[:body_decoded], 1)
     data[:twolines]       = limit_lines(data[:body_decoded], 3)
     data[:body]           = comment.body
-    data[:url]            = "http://www.reddit.com/r/#{submission.subreddit_name}/comments/#{submission.id}//#{comment.id}"
+    data[:url]            = "http://www.reddit.com/r/#{submission.subreddit_name}/comments/#{submission.id}/-/#{comment.id}"
     data[:created_utc]    = comment.created_utc
     data[:created]        = comment.created
     data[:urls]           = extract_urls(data[:body_decoded])
