@@ -31,7 +31,7 @@ class PageRenderer
 
       puts "Writing HTML output to #{to_where}"
       # write the output
-      File.open( to_where,"w" ) { |html|
+      File.open( to_where,"w:UTF-8" ) { |html|
         html << @template.render(liquid_data)
       }
     rescue Exception => e
